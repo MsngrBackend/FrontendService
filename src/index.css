@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root, [data-theme="light"] {
+  --surface: #FFFFFF;
+  --base: #F0EAE2;
+  --sidebar: #FFFFFF;
+  --hover: #F5EFE8;
+  --border: #D4CEC8;
+  --text-primary: #0F1923;
+  --text-secondary: #4A5060;
+  --text-muted: #7A8190;
+  --accent: #FF4655;
+  --accent-hover: #E03040;
+  --accent-dim: rgba(255, 70, 85, 0.12);
+  --input-bg: #F5EFE8;
+  --online: #22D3A5;
+  --scrollbar: #C8C3BA;
+  --scrollbar-hover: #A8A39A;
+}
+
+[data-theme="dark"] {
+  --surface: #1E2A35;
+  --base: #0F1923;
+  --sidebar: #131F28;
+  --hover: #1A2A38;
+  --border: #2A3A48;
+  --text-primary: #ECE8E1;
+  --text-secondary: #A8B0BB;
+  --text-muted: #5C6B78;
+  --accent: #FF4655;
+  --accent-hover: #FF5A68;
+  --accent-dim: rgba(255, 70, 85, 0.15);
+  --input-bg: #152030;
+  --online: #22D3A5;
+  --scrollbar: #2A3A48;
+  --scrollbar-hover: #3A4A58;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--base);
+  color: var(--text-primary);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
