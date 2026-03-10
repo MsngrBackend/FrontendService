@@ -25,7 +25,7 @@ export const MainLayout = () => {
       <div
         className={`${
           selectedChat ? "hidden md:flex" : "flex"
-        } md:flex h-full w-screen`}
+        } h-full w-full md:w-auto`}
       >
         <Sidebar
           onOpenProfile={() => setShowProfile(true)}

@@ -1,0 +1,15 @@
+{
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "http://188.17.152.49:8081/api/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
