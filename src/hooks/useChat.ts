@@ -57,9 +57,12 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
       if (destroyed) return;
 
       const token = localStorage.getItem('access_token') ?? '';
-      const ws = new WebSocket(
-        `/ws/${chatId}/${myUserId}?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`
-      );
+      const wsBase = import.meta.env.VITE_WS_BASE as string | undefined;
+      const rawUrl = wsBase
+        ? `${wsBase}/${chatId}/${myUserId}?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`
+        : `/ws/${chatId}/${myUserId}?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
+      const wsUrl = location.protocol === 'https:' ? rawUrl.replace(/^ws:\/\//, 'wss://') : rawUrl;
+      const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
 
       ws.onmessage = (event) => {
