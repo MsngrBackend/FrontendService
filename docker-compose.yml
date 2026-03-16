@@ -1,0 +1,16 @@
+name: frontend-service
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:80"
+    restart: unless-stopped
+    networks:
+      - msngr-network
+
+networks:
+  msngr-network:
+    external: true
