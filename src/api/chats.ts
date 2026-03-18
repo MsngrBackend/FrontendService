@@ -1,22 +1,36 @@
 import type { Chat, ChatMember, Message } from '../types/chat';
-import { getUserIdFromJwt } from './client';
+import { getUserIdFromJwt, refreshAccessToken } from './client';
 
 const BASE = `${import.meta.env.VITE_API_URL ?? ''}/api/v1/messages`;
 
-async function req<T>(path: string, options: RequestInit = {}): Promise<T> {
+async function req<T>(path: string, options: RequestInit & { _retry?: boolean } = {}): Promise<T> {
+  const { _retry = false, ...init } = options;
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string>),
+    ...(init.headers as Record<string, string>),
   };
   const token = localStorage.getItem('access_token');
   if (token) headers['Authorization'] = `Bearer ${token}`;
   const userId = getUserIdFromJwt();
   if (userId) headers['X-User-Id'] = userId;
 
-  const res = await fetch(`${BASE}${path}`, { ...options, headers });
+  const res = await fetch(`${BASE}${path}`, { ...init, headers });
+
+  if (res.status === 401 && !_retry) {
+    try {
+      await refreshAccessToken();
+      return req<T>(path, { ...options, _retry: true });
+    } catch {
+      throw { status: 401, message: 'Session expired' };
+    }
+  }
+
   if (!res.ok) {
     const body = await res.json().catch(() => ({ detail: 'Unknown error' })) as Record<string, unknown>;
-    throw new Error(typeof body['detail'] === 'string' ? body['detail'] : 'Unknown error');
+    const message = typeof body['detail'] === 'string' ? body['detail']
+      : typeof body['error'] === 'string' ? body['error']
+      : 'Unknown error';
+    throw new Error(message);
   }
   if (res.status === 204) return null as T;
   return res.json() as Promise<T>;

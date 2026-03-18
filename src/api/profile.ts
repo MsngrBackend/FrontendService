@@ -8,6 +8,9 @@ export const profileApi = {
   getProfileById: (userId: string) =>
     profileHttp.get<Profile>(`/${userId}`),
 
+  getProfileByUsername: (username: string) =>
+    profileHttp.get<Profile>(`/by-username/${encodeURIComponent(username)}`),
+
   updateProfile: (data: UpdateProfileData) =>
     profileHttp.patch<Profile>('/me', data),
 

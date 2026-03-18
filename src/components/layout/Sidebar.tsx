@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Search, Settings, LogOut, Edit3, MessageSquare, Users, Plus } from "lucide-react";
+import { Search, Settings, LogOut, Edit3, MessageSquare, Users, Plus, RefreshCw } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { useDisplayName } from "../../hooks/useDisplayName";
 import { Avatar } from "../ui/Avatar";
@@ -35,13 +35,18 @@ export const Sidebar = ({ onOpenProfile, onOpenSettings, onSelectChat, selectedC
   const [newChatName, setNewChatName] = useState("");
   const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
-    if (activeTab !== "chats") return;
+  const loadChats = () => {
     setChatsLoading(true);
     chatsApi.getMyChats()
       .then(setChats)
       .catch(() => setChats([]))
       .finally(() => setChatsLoading(false));
+  };
+
+  useEffect(() => {
+    if (activeTab !== "chats") return;
+    loadChats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleLogout = async () => {
@@ -130,6 +135,14 @@ export const Sidebar = ({ onOpenProfile, onOpenSettings, onSelectChat, selectedC
             />
           </div>
 
+          <button
+            onClick={loadChats}
+            disabled={chatsLoading}
+            className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors disabled:opacity-40"
+            title="Обновить список чатов"
+          >
+            <RefreshCw size={16} className={`text-(--text-muted) ${chatsLoading ? 'animate-spin' : ''}`} />
+          </button>
           <button
             onClick={() => setShowCreateForm((v) => !v)}
             className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors"

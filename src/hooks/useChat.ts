@@ -12,11 +12,13 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
   const [fetchState, setFetchState] = useState<{
     chatId: number | null;
     messages: Message[];
+    error?: string;
   }>({ chatId: null, messages: [] });
   const [isTyping, setIsTyping] = useState(false);
 
   const messages = fetchState.chatId === chatId ? fetchState.messages : [];
   const loading = chatId !== null && fetchState.chatId !== chatId;
+  const fetchError = fetchState.chatId === chatId ? fetchState.error : undefined;
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -36,9 +38,10 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
           setFetchState({ chatId, messages: [...msgs].reverse() });
         }
       })
-      .catch(() => {
+      .catch((e: unknown) => {
         if (!cancelled) {
-          setFetchState({ chatId, messages: [] });
+          const msg = e instanceof Error ? e.message : 'Ошибка загрузки сообщений';
+          setFetchState({ chatId, messages: [], error: msg });
         }
       });
 
@@ -58,11 +61,21 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
 
       const token = localStorage.getItem('access_token') ?? '';
       const wsBase = import.meta.env.VITE_WS_BASE as string | undefined;
+      const wsScheme = location.protocol === 'https:' ? 'wss' : 'ws';
       const rawUrl = wsBase
         ? `${wsBase}/${chatId}/${myUserId}?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`
-        : `/ws/${chatId}/${myUserId}?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
-      const wsUrl = location.protocol === 'https:' ? rawUrl.replace(/^ws:\/\//, 'wss://') : rawUrl;
-      const ws = new WebSocket(wsUrl);
+        : `${wsScheme}://${location.host}/ws/${chatId}/${myUserId}?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
+      const wsUrl = rawUrl.startsWith('ws://') && location.protocol === 'https:'
+        ? rawUrl.replace(/^ws:\/\//, 'wss://')
+        : rawUrl;
+
+      let ws: WebSocket;
+      try {
+        ws = new WebSocket(wsUrl);
+      } catch (e) {
+        console.error('[useChat] WebSocket URL error:', wsUrl, e);
+        return;
+      }
       wsRef.current = ws;
 
       ws.onmessage = (event) => {
@@ -183,5 +196,5 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
     }));
   }, []);
 
-  return { messages, loading, isTyping, myUserId, sendMessage, sendTyping, editMessage, deleteMessage };
+  return { messages, loading, fetchError, isTyping, myUserId, sendMessage, sendTyping, editMessage, deleteMessage };
 }
