@@ -1,39 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap');
 @import "tailwindcss";
 
+/* ── Light theme ── */
 :root, [data-theme="light"] {
   --surface: #FFFFFF;
-  --base: #F0EAE2;
-  --sidebar: #FFFFFF;
-  --hover: #F5EFE8;
-  --border: #D4CEC8;
-  --text-primary: #0F1923;
-  --text-secondary: #4A5060;
-  --text-muted: #7A8190;
+  --base: #F2F2F7;
+  --sidebar: #FAFAFA;
+  --hover: #EBEBF0;
+  --border: #E5E5EA;
+  --text-primary: #0A0A0F;
+  --text-secondary: #3A3A3C;
+  --text-muted: #8E8E93;
   --accent: #FF4655;
   --accent-hover: #E03040;
-  --accent-dim: rgba(255, 70, 85, 0.12);
-  --input-bg: #F5EFE8;
-  --online: #22D3A5;
-  --scrollbar: #C8C3BA;
-  --scrollbar-hover: #A8A39A;
+  --accent-dim: rgba(255, 70, 85, 0.10);
+  --input-bg: #EBEBF0;
+  --online: #30D158;
+  --scrollbar: #C7C7CC;
+  --scrollbar-hover: #AEAEB2;
+  --msg-mine-bg: #FF4655;
+  --msg-mine-text: #FFFFFF;
+  --msg-other-bg: #FFFFFF;
+  --msg-other-text: #0A0A0F;
 }
 
+/* ── Dark theme ── */
 [data-theme="dark"] {
-  --surface: #1E2A35;
-  --base: #0F1923;
-  --sidebar: #131F28;
-  --hover: #1A2A38;
-  --border: #2A3A48;
-  --text-primary: #ECE8E1;
-  --text-secondary: #A8B0BB;
-  --text-muted: #5C6B78;
+  --surface: #1C1C1E;
+  --base: #000000;
+  --sidebar: #111113;
+  --hover: #2C2C2E;
+  --border: #38383A;
+  --text-primary: #F2F2F7;
+  --text-secondary: #EBEBF5;
+  --text-muted: #9A9AA0;
   --accent: #FF4655;
   --accent-hover: #FF5A68;
-  --accent-dim: rgba(255, 70, 85, 0.15);
-  --input-bg: #152030;
-  --online: #22D3A5;
-  --scrollbar: #2A3A48;
-  --scrollbar-hover: #3A4A58;
+  --accent-dim: rgba(255, 70, 85, 0.14);
+  --input-bg: #2C2C2E;
+  --online: #30D158;
+  --scrollbar: #3A3A3C;
+  --scrollbar-hover: #48484A;
+  --msg-mine-bg: #FF4655;
+  --msg-mine-text: #FFFFFF;
+  --msg-other-bg: #2C2C2E;
+  --msg-other-text: #F2F2F7;
 }
 
 * {
@@ -42,26 +53,193 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-feature-settings: 'cv01', 'cv02', 'cv03', 'ss01';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--base);
   color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* ── Scrollbars ── */
 ::-webkit-scrollbar {
   width: 4px;
+  height: 4px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar);
+  border-radius: 100px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
+
+/* ── Focus ring ── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-hover);
+/* ── Text selection ── */
+::selection {
+  background: var(--accent-dim);
+  color: var(--text-primary);
+}
+
+/* ── Smooth theme color transitions ── */
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+
+/* Override transition for elements that need instant feel */
+button, input, textarea, a {
+  transition-property: background-color, border-color, color, opacity, transform, box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+
+/* ── Shimmer skeleton ── */
+@keyframes shimmer {
+  0%   { background-position: -400% 0; }
+  100% { background-position: 400% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--hover) 25%,
+    var(--border) 50%,
+    var(--hover) 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ── Message entrance animation ── */
+@keyframes msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-msg-in {
+  animation: msg-in 0.18s ease-out both;
+}
+
+/* ── Chat view entrance animation ── */
+@keyframes chat-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-chat-in {
+  animation: chat-fade-in 0.2s ease-out both;
+}
+
+/* ── Valorant map chat backgrounds ── */
+
+/* Ascent — тёплая итальянская пьяцца, золото/янтарь */
+.chat-bg-ascent {
+  background-image:
+    radial-gradient(ellipse at 15% 85%, rgba(255, 185, 60, 0.13) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 15%, rgba(255, 70, 85, 0.09) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(200, 140, 40, 0.05) 0%, transparent 70%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 48px,
+      rgba(255, 185, 60, 0.04) 48px,
+      rgba(255, 185, 60, 0.04) 49px
+    );
+}
+
+/* Icebox — арктическая база, холодный синий/циан */
+.chat-bg-icebox {
+  background-image:
+    radial-gradient(ellipse at 25% 75%, rgba(60, 180, 255, 0.11) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 25%, rgba(140, 220, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, rgba(80, 200, 240, 0.06) 0%, transparent 40%),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 56px,
+      rgba(60, 180, 255, 0.03) 56px,
+      rgba(60, 180, 255, 0.03) 57px
+    );
+}
+
+/* Bind — марокканский город, оранжевый/красный */
+.chat-bg-bind {
+  background-image:
+    radial-gradient(ellipse at 50% 100%, rgba(255, 125, 40, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 95% 5%, rgba(255, 70, 85, 0.09) 0%, transparent 45%),
+    radial-gradient(ellipse at 10% 40%, rgba(220, 100, 30, 0.07) 0%, transparent 40%),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 36px,
+      rgba(255, 125, 40, 0.03) 36px,
+      rgba(255, 125, 40, 0.03) 37px
+    );
+}
+
+/* Haven — азиатский храм, зелёный/бирюзовый */
+.chat-bg-haven {
+  background-image:
+    radial-gradient(ellipse at 20% 60%, rgba(40, 190, 110, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(60, 150, 100, 0.08) 0%, transparent 45%),
+    radial-gradient(ellipse at 60% 10%, rgba(80, 200, 140, 0.06) 0%, transparent 40%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 52px,
+      rgba(40, 190, 110, 0.03) 52px,
+      rgba(40, 190, 110, 0.03) 53px
+    );
+}
+
+/* Fracture — sci-fi пустыня, фиолетовый + красный */
+.chat-bg-fracture {
+  background-image:
+    radial-gradient(ellipse at 0% 55%, rgba(180, 40, 255, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 45%, rgba(255, 70, 85, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(140, 20, 200, 0.06) 0%, transparent 40%),
+    repeating-linear-gradient(
+      60deg,
+      transparent,
+      transparent 40px,
+      rgba(180, 40, 255, 0.025) 40px,
+      rgba(180, 40, 255, 0.025) 41px
+    );
+}
+
+/* ── Respect reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--hover);
+  }
+  .animate-msg-in,
+  .animate-chat-in {
+    animation: none;
+  }
 }
