@@ -18,6 +18,10 @@ interface AuthStore {
   setProfile: (profile: Profile) => void;
 }
 
+const authChannel = typeof BroadcastChannel !== 'undefined'
+  ? new BroadcastChannel('minigram-auth-sync')
+  : null;
+
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
@@ -47,6 +51,7 @@ export const useAuthStore = create<AuthStore>()(
           refreshToken: tokens.refresh_token,
           isAuthenticated: true,
         });
+        authChannel?.postMessage({ type: 'login' });
         try {
           const profile = await profileApi.getMyProfile();
           set({ profile });
@@ -65,6 +70,7 @@ export const useAuthStore = create<AuthStore>()(
           }
         }
         get().clearAuth();
+        authChannel?.postMessage({ type: 'logout' });
       },
 
       loadProfile: async () => {
@@ -88,3 +94,15 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
+
+authChannel?.addEventListener('message', (event: MessageEvent) => {
+  const { type } = event.data as { type: string };
+  if (type === 'logout') {
+    useAuthStore.getState().clearAuth();
+    window.location.reload();
+  }
+});
+
+window.addEventListener('auth:session-expired', () => {
+  useAuthStore.getState().clearAuth();
+});

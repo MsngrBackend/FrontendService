@@ -51,12 +51,21 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
     loadMembers();
   }, [loadMembers]);
 
+  const resolveUserId = async (input: string): Promise<string> => {
+    if (input.startsWith('@')) {
+      const profile = await profileApi.getProfileByUsername(input.slice(1));
+      return profile.user_id;
+    }
+    return input;
+  };
+
   const handleAdd = async () => {
-    const uid = newUserId.trim();
-    if (!uid) return;
+    const raw = newUserId.trim();
+    if (!raw) return;
     setAdding(true);
     setError('');
     try {
+      const uid = await resolveUserId(raw);
       await chatsApi.addMember(chatId, uid);
       setNewUserId('');
       await loadMembers();
@@ -140,7 +149,7 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="ID пользователя"
+            placeholder="ID или @username"
             value={newUserId}
             onChange={(e) => {
               setNewUserId(e.target.value);

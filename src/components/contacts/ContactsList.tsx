@@ -44,14 +44,23 @@ export const ContactsList = () => {
     }
   }
 
+  const resolveUserId = async (input: string): Promise<string> => {
+    if (input.startsWith("@")) {
+      const profile = await profileApi.getProfileByUsername(input.slice(1));
+      return profile.user_id;
+    }
+    return input;
+  };
+
   const handleAdd = async () => {
-    const id = addId.trim();
-    if (!id) return;
+    const raw = addId.trim();
+    if (!raw) return;
     setAdding(true);
     setAddError(null);
     try {
+      const contactId = await resolveUserId(raw);
       const contact = await profileApi.addContact({
-        contact_id: id,
+        contact_id: contactId,
         alias: addAlias.trim() || undefined,
       });
       setContacts((prev) => [...prev, contact]);
@@ -99,8 +108,8 @@ export const ContactsList = () => {
       {showAddForm && (
         <div className="px-4 py-3 border-b border-(--border) flex flex-col gap-2 bg-(--surface)">
           <Input
-            label="ID пользователя"
-            placeholder="uuid пользователя"
+            label="ID или @username"
+            placeholder="uuid или @username"
             value={addId}
             onChange={(e) => setAddId(e.target.value)}
           />

@@ -22,6 +22,7 @@ export async function refreshAccessToken(): Promise<string> {
     if (!res.ok) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      window.dispatchEvent(new CustomEvent('auth:session-expired'));
       throw new Error('refresh failed');
     }
 

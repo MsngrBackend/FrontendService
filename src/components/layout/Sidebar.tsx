@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Settings, LogOut, Edit3, MessageSquare, Users, Plus } from "lucide-react";
+import {
+  Search,
+  Settings,
+  LogOut,
+  Edit3,
+  MessageSquare,
+  Users,
+  Plus,
+  RefreshCw,
+} from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { useDisplayName } from "../../hooks/useDisplayName";
 import { Avatar } from "../ui/Avatar";
@@ -23,7 +32,11 @@ const TABS: { key: SidebarTab; Icon: typeof MessageSquare; label: string }[] = [
   { key: "settings", Icon: Settings, label: "Настройки" },
 ];
 
-export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: SidebarProps) => {
+export const Sidebar = ({
+  onOpenProfile,
+  onSelectChat,
+  selectedChatId,
+}: SidebarProps) => {
   const navigate = useNavigate();
   const { profile, logout } = useAuthStore();
   const displayName = useDisplayName();
@@ -36,13 +49,19 @@ export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: Sidebar
   const [newChatName, setNewChatName] = useState("");
   const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
-    if (activeTab !== "chats") return;
+  const loadChats = () => {
     setChatsLoading(true);
-    chatsApi.getMyChats()
+    chatsApi
+      .getMyChats()
       .then(setChats)
       .catch(() => setChats([]))
       .finally(() => setChatsLoading(false));
+  };
+
+  useEffect(() => {
+    if (activeTab !== "chats") return;
+    loadChats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleLogout = async () => {
@@ -90,18 +109,45 @@ export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: Sidebar
               className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors"
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="2" y="4" width="16" height="1.8" rx="0.9" fill="var(--text-muted)" />
-                <rect x="2" y="9.1" width="16" height="1.8" rx="0.9" fill="var(--text-muted)" />
-                <rect x="2" y="14.2" width="16" height="1.8" rx="0.9" fill="var(--text-muted)" />
+                <rect
+                  x="2"
+                  y="4"
+                  width="16"
+                  height="1.8"
+                  rx="0.9"
+                  fill="var(--text-muted)"
+                />
+                <rect
+                  x="2"
+                  y="9.1"
+                  width="16"
+                  height="1.8"
+                  rx="0.9"
+                  fill="var(--text-muted)"
+                />
+                <rect
+                  x="2"
+                  y="14.2"
+                  width="16"
+                  height="1.8"
+                  rx="0.9"
+                  fill="var(--text-muted)"
+                />
               </svg>
             </button>
 
             {menuOpen && (
               <>
-                <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setMenuOpen(false)}
+                />
                 <div className="absolute left-0 top-10 z-20 bg-(--surface) rounded-xl shadow-lg border border-(--border) py-1.5 w-48">
                   <button
-                    onClick={() => { setMenuOpen(false); navigate("/settings"); }}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate("/settings");
+                    }}
                     className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-(--text-secondary) hover:bg-(--hover) transition-colors"
                   >
                     <Settings size={16} className="text-(--text-muted)" />
@@ -121,7 +167,10 @@ export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: Sidebar
           </div>
 
           <div className="flex-1 relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-muted)" />
+            <Search
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-muted)"
+            />
             <input
               type="search"
               placeholder="Поиск"
@@ -131,6 +180,19 @@ export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: Sidebar
             />
           </div>
 
+          <button
+            onClick={loadChats}
+            disabled={chatsLoading}
+            className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors disabled:opacity-40"
+            title="Обновить список чатов"
+          >
+            <RefreshCw
+              size={16}
+              className={`text-(--text-muted) ${
+                chatsLoading ? "animate-spin" : ""
+              }`}
+            />
+          </button>
           <button
             onClick={() => setShowCreateForm((v) => !v)}
             className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors"
@@ -173,7 +235,9 @@ export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: Sidebar
               </div>
             ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-32 text-(--text-muted) gap-2">
-                <p className="text-sm">{search ? "Ничего не найдено" : "Нет чатов"}</p>
+                <p className="text-sm">
+                  {search ? "Ничего не найдено" : "Нет чатов"}
+                </p>
                 {!search && (
                   <button
                     onClick={() => setShowCreateForm(true)}
@@ -199,7 +263,9 @@ export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: Sidebar
                     <span className="text-sm font-semibold text-(--text-primary) truncate block">
                       {chat.name}
                     </span>
-                    <span className="text-xs text-(--text-muted)">Чат #{chat.id}</span>
+                    <span className="text-xs text-(--text-muted)">
+                      Чат #{chat.id}
+                    </span>
                   </div>
                 </button>
               ))
@@ -222,9 +288,13 @@ export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: Sidebar
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-(--online) rounded-full border-2 border-(--sidebar)" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-(--text-primary) truncate">{displayName}</p>
+              <p className="text-sm font-semibold text-(--text-primary) truncate">
+                {displayName}
+              </p>
               {profile?.username && (
-                <p className="text-xs text-(--text-muted) truncate">@{profile.username}</p>
+                <p className="text-xs text-(--text-muted) truncate">
+                  @{profile.username}
+                </p>
               )}
             </div>
           </div>
@@ -251,4 +321,4 @@ export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: Sidebar
       </div>
     </aside>
   );
-}
+};

@@ -25,6 +25,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
     messages,
     loading,
     typingUserId,
+    fetchError,
     myUserId,
     sendMessage,
     sendTyping,
@@ -79,6 +80,10 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
           {loading ? (
             <div className="flex justify-center py-10">
               <Spinner size={24} className="text-[(--accent)]" />
+            </div>
+          ) : fetchError ? (
+            <div className="flex flex-col items-center justify-center flex-1 text-(--text-muted) gap-1">
+              <p className="text-sm text-red-500">{fetchError}</p>
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1 text-(--text-muted)">
