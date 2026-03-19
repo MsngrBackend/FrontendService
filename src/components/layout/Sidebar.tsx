@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, Settings, LogOut, Edit3, MessageSquare, Users, Plus } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { useDisplayName } from "../../hooks/useDisplayName";
@@ -10,7 +11,6 @@ import type { Chat } from "../../types/chat";
 
 interface SidebarProps {
   onOpenProfile: () => void;
-  onOpenSettings: () => void;
   onSelectChat: (chat: Chat) => void;
   selectedChatId: number | null;
 }
@@ -23,7 +23,8 @@ const TABS: { key: SidebarTab; Icon: typeof MessageSquare; label: string }[] = [
   { key: "settings", Icon: Settings, label: "Настройки" },
 ];
 
-export const Sidebar = ({ onOpenProfile, onOpenSettings, onSelectChat, selectedChatId }: SidebarProps) => {
+export const Sidebar = ({ onOpenProfile, onSelectChat, selectedChatId }: SidebarProps) => {
+  const navigate = useNavigate();
   const { profile, logout } = useAuthStore();
   const displayName = useDisplayName();
   const [search, setSearch] = useState("");
@@ -51,7 +52,7 @@ export const Sidebar = ({ onOpenProfile, onOpenSettings, onSelectChat, selectedC
 
   const handleTabClick = (tab: SidebarTab) => {
     if (tab === "settings") {
-      onOpenSettings();
+      navigate("/settings");
       return;
     }
     setActiveTab(tab);
@@ -100,7 +101,7 @@ export const Sidebar = ({ onOpenProfile, onOpenSettings, onSelectChat, selectedC
                 <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
                 <div className="absolute left-0 top-10 z-20 bg-(--surface) rounded-xl shadow-lg border border-(--border) py-1.5 w-48">
                   <button
-                    onClick={() => { setMenuOpen(false); onOpenSettings(); }}
+                    onClick={() => { setMenuOpen(false); navigate("/settings"); }}
                     className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-(--text-secondary) hover:bg-(--hover) transition-colors"
                   >
                     <Settings size={16} className="text-(--text-muted)" />

@@ -13,7 +13,7 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
     chatId: number | null;
     messages: Message[];
   }>({ chatId: null, messages: [] });
-  const [isTyping, setIsTyping] = useState(false);
+  const [typingUserId, setTypingUserId] = useState<string | null>(null);
 
   const messages = fetchState.chatId === chatId ? fetchState.messages : [];
   const loading = chatId !== null && fetchState.chatId !== chatId;
@@ -56,13 +56,12 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
     const connect = () => {
       if (destroyed) return;
 
-      const token = localStorage.getItem('access_token') ?? '';
-      const wsBase = import.meta.env.VITE_WS_BASE as string | undefined;
-      const rawUrl = wsBase
-        ? `${wsBase}/${chatId}/${myUserId}?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`
-        : `/ws/${chatId}/${myUserId}?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
-      const wsUrl = location.protocol === 'https:' ? rawUrl.replace(/^ws:\/\//, 'wss://') : rawUrl;
-      const ws = new WebSocket(wsUrl);
+      const token = localStorage.getItem("access_token") ?? "";
+      const ws = new WebSocket(
+        `/ws/${chatId}/${myUserId}?username=${encodeURIComponent(
+          username
+        )}&token=${encodeURIComponent(token)}`
+      );
       wsRef.current = ws;
 
       ws.onmessage = (event) => {
@@ -74,9 +73,12 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
         if (data.text === undefined) {
           // typing event
           if (data.sender_id !== myUserId) {
-            setIsTyping(true);
+            setTypingUserId(data.sender_id ?? null);
             if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-            typingTimerRef.current = setTimeout(() => setIsTyping(false), 2000);
+            typingTimerRef.current = setTimeout(
+              () => setTypingUserId(null),
+              2000
+            );
           }
           return;
         }
@@ -165,15 +167,20 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
     ws.send(JSON.stringify({ type: "typing" }));
   }, []);
 
-  const editMessage = useCallback(async (messageId: number, content: string) => {
-    await chatsApi.updateMessage(messageId, content);
-    setFetchState((prev) => ({
-      ...prev,
-      messages: prev.messages.map((m) =>
-        m.id === messageId ? { ...m, content, updated_at: new Date().toISOString() } : m
-      ),
-    }));
-  }, []);
+  const editMessage = useCallback(
+    async (messageId: number, content: string) => {
+      await chatsApi.updateMessage(messageId, content);
+      setFetchState((prev) => ({
+        ...prev,
+        messages: prev.messages.map((m) =>
+          m.id === messageId
+            ? { ...m, content, updated_at: new Date().toISOString() }
+            : m
+        ),
+      }));
+    },
+    []
+  );
 
   const deleteMessage = useCallback(async (messageId: number) => {
     await chatsApi.deleteMessage(messageId);
@@ -183,5 +190,14 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
     }));
   }, []);
 
-  return { messages, loading, isTyping, myUserId, sendMessage, sendTyping, editMessage, deleteMessage };
-}
+  return {
+    messages,
+    loading,
+    typingUserId,
+    myUserId,
+    sendMessage,
+    sendTyping,
+    editMessage,
+    deleteMessage,
+  };
+};

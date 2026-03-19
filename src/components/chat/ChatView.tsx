@@ -24,7 +24,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
   const {
     messages,
     loading,
-    isTyping,
+    typingUserId,
     myUserId,
     sendMessage,
     sendTyping,
@@ -64,16 +64,21 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
       <div className="flex flex-col flex-1 h-full overflow-hidden">
         <ChatHeader
           chat={chat}
-          isTyping={isTyping}
+          isTyping={!!typingUserId}
           showMembers={showMembers}
           onToggleMembers={() => setShowMembers((v) => !v)}
           onBack={onBack}
+          userName={
+            typingUserId
+              ? senderNames[typingUserId] ?? typingUserId.slice(0, 8)
+              : ""
+          }
         />
 
         <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2">
           {loading ? (
             <div className="flex justify-center py-10">
-              <Spinner size={24} className="text-(--accent)" />
+              <Spinner size={24} className="text-[(--accent)]" />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1 text-(--text-muted)">

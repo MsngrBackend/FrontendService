@@ -6,6 +6,7 @@ interface ChatHeaderProps {
   chat: Chat;
   isTyping: boolean;
   showMembers: boolean;
+  userName: string;
   onToggleMembers: () => void;
   onBack?: () => void;
 }
@@ -14,6 +15,7 @@ export const ChatHeader = ({
   chat,
   isTyping,
   showMembers,
+  userName,
   onToggleMembers,
   onBack,
 }: ChatHeaderProps) => {
@@ -29,8 +31,12 @@ export const ChatHeader = ({
       )}
       <Avatar name={chat.name} size={38} />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-(--text-primary)">{chat.name}</p>
-        {isTyping && <p className="text-xs text-(--accent)">печатает...</p>}
+        <p className="text-sm font-semibold text-(--text-primary)">
+          {chat.name}
+        </p>
+        {isTyping && (
+          <p className="text-xs text-(--accent)">{`${userName} печатает...`}</p>
+        )}
       </div>
       <button
         onClick={onToggleMembers}
@@ -45,4 +51,4 @@ export const ChatHeader = ({
       </button>
     </div>
   );
-}
+};
