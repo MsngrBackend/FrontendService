@@ -1,10 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { X, UserPlus, Trash2 } from 'lucide-react';
-import { chatsApi } from '../../../shared/api/chats';
 import { profileApi } from '../../../shared/api/profile';
 import { Avatar } from '../../../shared/ui/Avatar';
 import { Spinner } from '../../../shared/ui/Spinner';
-import type { ChatMember } from '../../../shared/types/chat';
+import { useChatMembers } from '../lib/useChatMembers';
 import type { Profile } from '../../../shared/types/profile';
 
 interface Props {
@@ -20,36 +19,10 @@ const getDisplayName = (profile: Profile | null, userId: string): string => {
 }
 
 export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
-  const [members, setMembers] = useState<ChatMember[]>([]);
-  const [profiles, setProfiles] = useState<Record<string, Profile>>({});
-  const [loading, setLoading] = useState(true);
+  const { members, profiles, loading, addMember, removeMember } = useChatMembers(chatId);
   const [newUserId, setNewUserId] = useState('');
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState('');
-
-  const loadMembers = useCallback(async () => {
-    setLoading(true);
-    try {
-      const list = await chatsApi.getMembers(chatId);
-      setMembers(list);
-      const results = await Promise.allSettled(
-        list.map((m) => profileApi.getProfileById(m.user_id))
-      );
-      const map: Record<string, Profile> = {};
-      results.forEach((res, i) => {
-        if (res.status === 'fulfilled') map[list[i].user_id] = res.value;
-      });
-      setProfiles(map);
-    } catch {
-      // ignore
-    } finally {
-      setLoading(false);
-    }
-  }, [chatId]);
-
-  useEffect(() => {
-    loadMembers();
-  }, [loadMembers]);
 
   const resolveUserId = async (input: string): Promise<string> => {
     if (input.startsWith('@')) {
@@ -66,9 +39,8 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
     setError('');
     try {
       const uid = await resolveUserId(raw);
-      await chatsApi.addMember(chatId, uid);
+      await addMember(uid);
       setNewUserId('');
-      await loadMembers();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Ошибка');
     } finally {
@@ -78,8 +50,7 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
 
   const handleRemove = async (userId: string) => {
     try {
-      await chatsApi.removeMember(chatId, userId);
-      setMembers((prev) => prev.filter((m) => m.user_id !== userId));
+      await removeMember(userId);
     } catch {
       // ignore
     }

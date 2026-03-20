@@ -6,15 +6,26 @@ interface ChatHeaderProps {
   chat: Chat;
   isTyping: boolean;
   showMembers: boolean;
+  membersCount: number;
   userName: string;
   onToggleMembers: () => void;
   onBack?: () => void;
 }
 
+const pluralMembers = (n: number) => {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 14) return `${n} участников`;
+  if (mod10 === 1) return `${n} участник`;
+  if (mod10 >= 2 && mod10 <= 4) return `${n} участника`;
+  return `${n} участников`;
+};
+
 export const ChatHeader = ({
   chat,
   isTyping,
   showMembers,
+  membersCount,
   userName,
   onToggleMembers,
   onBack,
@@ -37,17 +48,32 @@ export const ChatHeader = ({
         <p className="text-3.5 font-semibold text-(--text-primary) leading-tight truncate">
           {chat.name}
         </p>
-        <div className="h-4 flex items-center" aria-live="polite" aria-atomic="true">
+        <div
+          className="h-4 flex items-center"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {isTyping ? (
             <span className="text-xs text-(--accent) font-medium flex items-center gap-1">
               {userName} печатает
               <span className="inline-flex gap-0.5 ml-0.5" aria-hidden="true">
-                <span className="w-1 h-1 rounded-full bg-(--accent) animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-1 h-1 rounded-full bg-(--accent) animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-1 h-1 rounded-full bg-(--accent) animate-bounce" style={{ animationDelay: "300ms" }} />
+                <span
+                  className="w-1 h-1 rounded-full bg-(--accent) animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <span
+                  className="w-1 h-1 rounded-full bg-(--accent) animate-bounce"
+                  style={{ animationDelay: "150ms" }}
+                />
+                <span
+                  className="w-1 h-1 rounded-full bg-(--accent) animate-bounce"
+                  style={{ animationDelay: "300ms" }}
+                />
               </span>
             </span>
-          ) : null}
+          ) : (
+            <span className="text-xs text-(--text-muted)">{pluralMembers(membersCount)}</span>
+          )}
         </div>
       </div>
 

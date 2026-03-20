@@ -8,6 +8,7 @@ import { MessageBubble } from "./MessageBubble";
 import { MessageInput } from "./MessageInput";
 import { MessageSkeleton } from "../../../shared/ui/Skeleton";
 import { useSenderNames } from "../lib/useSenderNames";
+import { useChatMembers } from "../lib/useChatMembers";
 import { useChatInput } from "../lib/useChatInput";
 import { useMessageEdit } from "../lib/useMessageEdit";
 import { ProfileView } from "../../../features/profile/ui/ProfileView";
@@ -48,6 +49,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
   const chatBg = VALORANT_BACKGROUNDS[Math.abs(Number(chat.id) || 0) % VALORANT_BACKGROUNDS.length] ?? VALORANT_BACKGROUNDS[0]!;
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const { members } = useChatMembers(chat.id);
   const senderNames = useSenderNames(chat.id);
   const { input, handleSend, handleKeyDown, handleInputChange } = useChatInput({
     sendMessage,
@@ -76,6 +78,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
           chat={chat}
           isTyping={!!typingUserId}
           showMembers={showMembers}
+          membersCount={members.length}
           onToggleMembers={() => setShowMembers((v) => !v)}
           onBack={onBack}
           userName={
