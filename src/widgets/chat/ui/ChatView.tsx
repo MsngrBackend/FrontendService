@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "../../../shared/hooks/useChat";
 import { useAuthStore } from "../../../entities/session/model/authStore";
 import { useDisplayName } from "../../../shared/hooks/useDisplayName";
@@ -11,7 +11,6 @@ import { useSenderNames } from "../lib/useSenderNames";
 import { useChatInput } from "../lib/useChatInput";
 import { useMessageEdit } from "../lib/useMessageEdit";
 import { ProfileView } from "../../../features/profile/ui/ProfileView";
-import { useState } from "react";
 import type { Chat } from "../../../shared/types/chat";
 
 interface ChatViewProps {
@@ -46,9 +45,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
 
   const [showMembers, setShowMembers] = useState(false);
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
-  const [chatBg] = useState(
-    () => VALORANT_BACKGROUNDS[Math.floor(Math.random() * VALORANT_BACKGROUNDS.length)]
-  );
+  const chatBg = VALORANT_BACKGROUNDS[Math.abs(Number(chat.id) || 0) % VALORANT_BACKGROUNDS.length] ?? VALORANT_BACKGROUNDS[0]!;
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const senderNames = useSenderNames(chat.id);
@@ -60,9 +57,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
     editingId,
     editText,
     editSaving,
-    hoveredId,
     setEditText,
-    setHoveredId,
     startEdit,
     cancelEdit,
     saveEdit,
@@ -121,15 +116,12 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
                 isEditing={editingId === msg.id}
                 editText={editText}
                 editSaving={editSaving}
-                isHovered={hoveredId === msg.id}
                 onStartEdit={startEdit}
                 onDelete={handleDelete}
                 onEditChange={setEditText}
                 onEditSave={saveEdit}
                 onEditCancel={cancelEdit}
                 onEditKeyDown={handleEditKeyDown}
-                onMouseEnter={() => setHoveredId(msg.id)}
-                onMouseLeave={() => setHoveredId(null)}
                 onAvatarClick={setViewingUserId}
               />
             ))

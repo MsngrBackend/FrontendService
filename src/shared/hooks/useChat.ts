@@ -106,13 +106,30 @@ export const useChat = ({ chatId, username }: UseChatOptions) => {
           return;
         }
 
-        // Skip echo of own messages (added optimistically on send)
+        // Echo of own message — replace the matching temp bubble with the real one
         if (data.sender_id === myUserId) {
+          if (data.id != null) {
+            setFetchState((prev) => {
+              const tempIdx = prev.messages.findIndex(
+                (m) => m._temp && m.content === data.text
+              );
+              if (tempIdx === -1) return prev;
+              const messages = [...prev.messages];
+              messages[tempIdx] = {
+                id: data.id!,
+                chat_id: chatId,
+                content: data.text,
+                sender_id: myUserId,
+                created_at: messages[tempIdx].created_at,
+              };
+              return { ...prev, messages };
+            });
+          }
           return;
         }
 
         const msg: Message = {
-          id: Date.now(),
+          id: data.id ?? Date.now(),
           chat_id: chatId,
           content: data.text,
           sender_id: data.sender_id ?? "",

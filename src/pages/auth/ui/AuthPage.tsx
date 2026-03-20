@@ -9,7 +9,15 @@ const LogoMark = () => (
   <svg width="28" height="28" viewBox="0 0 34 34" fill="none">
     <rect x="7" y="8" width="4" height="19" rx="2" fill="white" />
     <rect x="7" y="8" width="20" height="4" rx="2" fill="white" />
-    <rect x="7" y="15.5" width="13" height="4" rx="2" fill="white" fillOpacity="0.85" />
+    <rect
+      x="7"
+      y="15.5"
+      width="13"
+      height="4"
+      rx="2"
+      fill="white"
+      fillOpacity="0.85"
+    />
     <circle cx="25" cy="17.5" r="2.5" fill="white" />
     <rect x="7" y="23" width="20" height="4" rx="2" fill="white" />
   </svg>
@@ -27,17 +35,13 @@ export const AuthPage = () => {
 
   return (
     <div className="min-h-screen bg-(--base) flex items-center justify-center p-4 md:p-0">
-
       {/* ─── DESKTOP: full-screen split-panel with sliding overlay ─── */}
       <div
         className="hidden md:flex fixed inset-0 z-0"
         style={{ background: "var(--surface)" }}
       >
         {/* LEFT PANEL — Register form */}
-        <div
-          className="w-1/2 overflow-y-auto flex flex-col justify-center items-center"
-          style={{ padding: "52px 10vw" }}
-        >
+        <div className="w-1/2 overflow-y-auto flex flex-col justify-center items-center">
           <div className="w-full max-w-sm">
             {/* Brand header */}
             <div className="flex items-center gap-2.5 mb-8">
@@ -52,7 +56,9 @@ export const AuthPage = () => {
                 <LogoMark />
               </div>
               <div>
-                <p className="text-base font-bold text-(--text-primary) leading-none">Егор</p>
+                <p className="text-base font-bold text-(--text-primary) leading-none">
+                  Егор
+                </p>
                 <p className="text-xs text-(--text-muted) mt-0.5">Мессенджер</p>
               </div>
             </div>
@@ -62,16 +68,15 @@ export const AuthPage = () => {
             >
               Регистрация
             </h2>
-            <p className="text-sm text-(--text-muted) mb-6">Создайте новый аккаунт</p>
+            <p className="text-sm text-(--text-muted) mb-6">
+              Создайте новый аккаунт
+            </p>
             <RegisterForm onSwitch={() => setMode("login")} />
           </div>
         </div>
 
         {/* RIGHT PANEL — Login form */}
-        <div
-          className="w-1/2 flex flex-col justify-center items-center"
-          style={{ padding: "52px 10vw" }}
-        >
+        <div className="w-1/2 flex flex-col justify-center items-center">
           <div className="w-full max-w-sm">
             {/* Brand header */}
             <div className="flex items-center gap-2.5 mb-8">
@@ -86,7 +91,9 @@ export const AuthPage = () => {
                 <LogoMark />
               </div>
               <div>
-                <p className="text-base font-bold text-(--text-primary) leading-none">Егор</p>
+                <p className="text-base font-bold text-(--text-primary) leading-none">
+                  Егор
+                </p>
                 <p className="text-xs text-(--text-muted) mt-0.5">Мессенджер</p>
               </div>
             </div>
@@ -105,7 +112,9 @@ export const AuthPage = () => {
         <AuthOverlayPanel
           mode={mode}
           overlayContent={overlayContent}
-          onSwitch={() => setMode(overlayContent === "login" ? "register" : "login")}
+          onSwitch={() =>
+            setMode(overlayContent === "login" ? "register" : "login")
+          }
         />
       </div>
 

@@ -6,6 +6,7 @@ import { Avatar } from "../../../shared/ui/Avatar";
 import { Spinner } from "../../../shared/ui/Spinner";
 import { Input } from "../../../shared/ui/Input";
 import { Button } from "../../../shared/ui/Button";
+import { ProfileView } from "../../profile/ui/ProfileView";
 
 const getContactDisplayName = (c: Contact): string => {
   if (c.alias) return c.alias;
@@ -26,6 +27,7 @@ export const ContactsList = () => {
   const [addError, setAddError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [viewingUserId, setViewingUserId] = useState<string | null>(null);
 
   useEffect(() => {
     load();
@@ -159,7 +161,8 @@ export const ContactsList = () => {
           contacts.map((contact) => (
             <div
               key={contact.contact_id}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-(--hover) transition-colors"
+              onClick={() => setViewingUserId(contact.contact_id)}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-(--hover) transition-colors cursor-pointer"
             >
               <Avatar
                 src={contact.profile?.avatar_url}
@@ -177,7 +180,7 @@ export const ContactsList = () => {
                 )}
               </div>
               <button
-                onClick={() => handleRemove(contact.contact_id)}
+                onClick={(e) => { e.stopPropagation(); handleRemove(contact.contact_id); }}
                 disabled={removingId === contact.contact_id}
                 className="p-1.5 rounded-lg text-(--text-muted) hover:text-red-500 hover:bg-red-500/10 transition-colors"
                 title="Удалить контакт"
@@ -192,6 +195,12 @@ export const ContactsList = () => {
           ))
         )}
       </div>
+      {viewingUserId && (
+        <ProfileView
+          userId={viewingUserId}
+          onClose={() => setViewingUserId(null)}
+        />
+      )}
     </div>
   );
 }

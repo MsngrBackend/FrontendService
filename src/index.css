@@ -123,6 +123,11 @@ button, input, textarea, a {
   border-radius: 8px;
 }
 
+/* ── Mine message bubble gradient ── */
+.bubble-mine {
+  background: linear-gradient(145deg, #FF4655 0%, #D63050 100%);
+}
+
 /* ── Message entrance animation ── */
 @keyframes msg-in {
   from {

@@ -9,7 +9,6 @@ export const useMessageEdit = ({ editMessage, deleteMessage }: UseMessageEditOpt
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [editSaving, setEditSaving] = useState(false);
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   const startEdit = (id: number, content: string) => {
     setEditingId(id);
@@ -55,9 +54,7 @@ export const useMessageEdit = ({ editMessage, deleteMessage }: UseMessageEditOpt
     editingId,
     editText,
     editSaving,
-    hoveredId,
     setEditText,
-    setHoveredId,
     startEdit,
     cancelEdit,
     saveEdit,

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pencil, Trash2, Check, X } from "lucide-react";
 import { Avatar } from "../../../shared/ui/Avatar";
 import { Spinner } from "../../../shared/ui/Spinner";
@@ -17,17 +17,16 @@ interface MessageBubbleProps {
   isEditing: boolean;
   editText: string;
   editSaving: boolean;
-  isHovered: boolean;
   onStartEdit: (id: number, content: string) => void;
   onDelete: (id: number) => void;
   onEditChange: (text: string) => void;
   onEditSave: () => void;
   onEditCancel: () => void;
   onEditKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
   onAvatarClick?: (userId: string) => void;
 }
+
+const LONG_PRESS_MS = 500;
 
 export const MessageBubble = ({
   msg,
@@ -36,47 +35,74 @@ export const MessageBubble = ({
   isEditing,
   editText,
   editSaving,
-  isHovered,
   onStartEdit,
   onDelete,
   onEditChange,
   onEditSave,
   onEditCancel,
   onEditKeyDown,
-  onMouseEnter,
-  onMouseLeave,
   onAvatarClick,
 }: MessageBubbleProps) => {
   const editRef = useRef<HTMLTextAreaElement>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const [showActions, setShowActions] = useState(false);
 
   useEffect(() => {
     if (isEditing) editRef.current?.focus();
   }, [isEditing]);
 
+  // Close actions on outside click
+  useEffect(() => {
+    if (!showActions) return;
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if (bubbleRef.current && !bubbleRef.current.contains(e.target as Node)) {
+        setShowActions(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
+    };
+  }, [showActions]);
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    if (!isMine || msg._temp) return;
+    e.preventDefault();
+    setShowActions((v) => !v);
+  };
+
+  const handleTouchStart = () => {
+    if (!isMine || msg._temp) return;
+    longPressTimer.current = setTimeout(() => setShowActions((v) => !v), LONG_PRESS_MS);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   return (
-    <div
-      className={`flex animate-msg-in px-1 ${isMine ? "justify-end" : "justify-start"}`}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={onMouseEnter}
-    >
+    <div className={`flex animate-msg-in px-1 ${isMine ? "justify-end" : "justify-start"}`}>
       <div className={`flex gap-2 max-w-[72%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
 
         {/* Avatar */}
-        {!isMine && (
-          onAvatarClick ? (
-            <button
-              onClick={() => onAvatarClick(msg.sender_id)}
-              aria-label={`Профиль ${senderName}`}
-              className="shrink-0 self-end mb-1 rounded-full hover:opacity-80 transition-opacity"
-            >
-              <Avatar name={senderName} size={28} />
-            </button>
-          ) : (
-            <div className="shrink-0 self-end mb-1" aria-hidden="true">
-              <Avatar name={senderName} size={28} />
-            </div>
-          )
+        {onAvatarClick ? (
+          <button
+            onClick={() => onAvatarClick(msg.sender_id)}
+            aria-label={`Профиль ${senderName}`}
+            className="shrink-0 self-end mb-1 rounded-full hover:opacity-80 transition-opacity p-2 -m-2"
+          >
+            <Avatar name={senderName} size={28} />
+          </button>
+        ) : (
+          <div className="shrink-0 self-end mb-1" aria-hidden="true">
+            <Avatar name={senderName} size={28} />
+          </div>
         )}
 
         {/* Bubble + actions */}
@@ -87,26 +113,26 @@ export const MessageBubble = ({
             </span>
           )}
 
-          <div className={`relative flex items-end gap-1.5 ${isMine ? "flex-row-reverse" : "flex-row"}`}>
+          <div className="relative flex items-end" ref={bubbleRef}>
 
             {/* Floating action toolbar */}
             {isMine && !isEditing && !msg._temp && (
               <div
                 role="toolbar"
                 aria-label="Действия с сообщением"
-                className={`flex gap-0.5 mb-1 transition-all duration-150 ${
-                  isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1 pointer-events-none"
+                className={`absolute right-full flex gap-0.5 mb-1 transition-all duration-150 ${
+                  showActions ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1 pointer-events-none"
                 }`}
               >
                 <button
-                  onClick={() => onStartEdit(msg.id, msg.content)}
+                  onClick={() => { onStartEdit(msg.id, msg.content); setShowActions(false); }}
                   aria-label="Редактировать сообщение"
                   className="w-9 h-9 flex items-center justify-center rounded-lg text-(--text-muted) hover:text-accent hover:bg-accent/10 transition-colors"
                 >
                   <Pencil size={14} aria-hidden="true" />
                 </button>
                 <button
-                  onClick={() => onDelete(msg.id)}
+                  onClick={() => { onDelete(msg.id); setShowActions(false); }}
                   aria-label="Удалить сообщение"
                   className="w-9 h-9 flex items-center justify-center rounded-lg text-(--text-muted) hover:text-red-500 hover:bg-red-500/10 transition-colors"
                 >
@@ -117,9 +143,13 @@ export const MessageBubble = ({
 
             {/* Bubble */}
             <div
-              className={`px-3.5 py-2.5 text-sm leading-relaxed ${
+              onContextMenu={handleContextMenu}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              onTouchMove={handleTouchEnd}
+              className={`px-3.5 py-2.5 text-sm leading-relaxed select-none ${
                 isMine
-                  ? "bg-(--msg-mine-bg) text-(--msg-mine-text) rounded-2xl rounded-br-md"
+                  ? "bubble-mine text-(--msg-mine-text) rounded-2xl rounded-br-md"
                   : "bg-(--msg-other-bg) text-(--msg-other-text) rounded-2xl rounded-bl-md"
               } ${msg._temp ? "opacity-60" : ""}`}
             >
