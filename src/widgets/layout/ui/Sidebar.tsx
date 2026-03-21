@@ -63,7 +63,6 @@ export const Sidebar = ({
   useEffect(() => {
     if (activeTab !== "chats") return;
     loadChats();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleLogout = async () => {

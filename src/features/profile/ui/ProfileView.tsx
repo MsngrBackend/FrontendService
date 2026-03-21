@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { Settings, Copy, Check, Hash, Clock, Calendar, AtSign } from "lucide-react";
+import {
+  Settings,
+  Copy,
+  Check,
+  Hash,
+  Clock,
+  Calendar,
+  AtSign,
+} from "lucide-react";
 import { useAuthStore } from "../../../entities/session/model/authStore";
 import { useDisplayName } from "../../../shared/hooks/useDisplayName";
 import { Modal } from "../../../shared/ui/Modal";
@@ -22,13 +30,20 @@ const formatLastSeen = (iso: string | undefined): string => {
   const diffMin = Math.floor((now.getTime() - date.getTime()) / 60000);
   if (diffMin < 1) return "только что";
   if (diffMin < 60) return `${diffMin} мин. назад`;
-  const timeStr = date.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  const timeStr = date.toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today.getTime() - 86400000);
   const dateDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   if (dateDay.getTime() === today.getTime()) return `сегодня в ${timeStr}`;
   if (dateDay.getTime() === yesterday.getTime()) return `вчера в ${timeStr}`;
-  return date.toLocaleDateString("ru-RU", { day: "2-digit", month: "long", year: "numeric" });
+  return date.toLocaleDateString("ru-RU", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 };
 
 const formatJoined = (iso: string): string =>
@@ -57,7 +72,6 @@ const CopyIdButton = ({ userId }: { userId: string }) => {
       el.style.opacity = "0";
       document.body.appendChild(el);
       el.select();
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
       document.execCommand("copy");
       document.body.removeChild(el);
       setCopied(true);
@@ -78,7 +92,10 @@ const CopyIdButton = ({ userId }: { userId: string }) => {
       {copied ? (
         <Check size={13} className="text-green-500" />
       ) : (
-        <Copy size={13} className="text-(--text-muted) group-hover:text-(--accent) transition-colors" />
+        <Copy
+          size={13}
+          className="text-(--text-muted) group-hover:text-(--accent) transition-colors"
+        />
       )}
     </button>
   );
@@ -102,34 +119,49 @@ const InfoRow = ({
   </div>
 );
 
-export const ProfileView = ({ onClose, onOpenSettings, userId }: ProfileViewProps) => {
+export const ProfileView = ({
+  onClose,
+  onOpenSettings,
+  userId,
+}: ProfileViewProps) => {
   const { profile: myProfile } = useAuthStore();
   const myDisplayName = useDisplayName();
 
-  const [otherProfile, setOtherProfile] = useState<Profile | null>(null);
-  const [fetchedForUserId, setFetchedForUserId] = useState<string | null>(null);
-  const [profileHidden, setProfileHidden] = useState(false);
-  const loadingOther = !!userId && fetchedForUserId !== userId;
+  const [fetchResult, setFetchResult] = useState<{
+    userId: string | null;
+    profile: Profile | null;
+    hidden: boolean;
+  }>({ userId: null, profile: null, hidden: false });
+
+  const loadingOther = !!userId && fetchResult.userId !== userId;
 
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
-    setProfileHidden(false);
     profileApi
       .getProfileById(userId)
-      .then((p) => { if (!cancelled) setOtherProfile(p); })
-      .catch((e: { status?: number }) => {
-        if (!cancelled && e?.status === 403) setProfileHidden(true);
+      .then((p) => {
+        if (!cancelled) setFetchResult({ userId, profile: p, hidden: false });
       })
-      .finally(() => { if (!cancelled) setFetchedForUserId(userId); });
-    return () => { cancelled = true; };
+      .catch((e: { status?: number }) => {
+        if (!cancelled)
+          setFetchResult({ userId, profile: null, hidden: e?.status === 403 });
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [userId]);
 
   const isOther = !!userId;
+  const otherProfile = fetchResult.profile;
+  const profileHidden = fetchResult.hidden;
+  const fetchedForUserId = fetchResult.userId;
   const profile = isOther ? otherProfile : myProfile;
   const displayName = isOther
     ? otherProfile
-      ? [otherProfile.first_name, otherProfile.last_name].filter(Boolean).join(" ") ||
+      ? [otherProfile.first_name, otherProfile.last_name]
+          .filter(Boolean)
+          .join(" ") ||
         otherProfile.username ||
         userId!.slice(0, 8) + "…"
       : userId!.slice(0, 8) + "…"
@@ -140,18 +172,22 @@ export const ProfileView = ({ onClose, onOpenSettings, userId }: ProfileViewProp
 
   // Для чужого профиля определяем, скрыты ли поля настройками приватности:
   // бэкенд возвращает null/undefined для скрытых полей.
-  const avatarHidden = isOther && fetchedForUserId === userId && !profile?.avatar_url && !profile?.first_name && !profile?.last_name;
-  const lastSeenHidden = isOther && fetchedForUserId === userId && !profile?.last_seen_at;
+  const lastSeenHidden =
+    isOther && fetchedForUserId === userId && !profile?.last_seen_at;
 
-  const settingsButton = !isOther && onOpenSettings ? (
-    <button
-      onClick={() => { onClose(); onOpenSettings(); }}
-      className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors text-(--text-muted)"
-      aria-label="Настройки профиля"
-    >
-      <Settings size={17} />
-    </button>
-  ) : undefined;
+  const settingsButton =
+    !isOther && onOpenSettings ? (
+      <button
+        onClick={() => {
+          onClose();
+          onOpenSettings();
+        }}
+        className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors text-(--text-muted)"
+        aria-label="Настройки профиля"
+      >
+        <Settings size={17} />
+      </button>
+    ) : undefined;
 
   return (
     <Modal
@@ -168,7 +204,9 @@ export const ProfileView = ({ onClose, onOpenSettings, userId }: ProfileViewProp
         <div className="flex flex-col items-center justify-center py-16 gap-3 text-(--text-muted)">
           <span className="text-4xl opacity-30">🔒</span>
           <p className="text-sm font-medium">Профиль скрыт</p>
-          <p className="text-xs text-center px-6">Этот пользователь ограничил доступ к своему профилю</p>
+          <p className="text-xs text-center px-6">
+            Этот пользователь ограничил доступ к своему профилю
+          </p>
         </div>
       ) : (
         <div className="flex flex-col overflow-y-auto">
@@ -184,7 +222,6 @@ export const ProfileView = ({ onClose, onOpenSettings, userId }: ProfileViewProp
 
           {/* Avatar + identity */}
           <div className="flex flex-col items-center -mt-11 px-5 pb-5 gap-4">
-
             {/* Avatar with online indicator */}
             <div className="relative">
               <Avatar
@@ -207,14 +244,20 @@ export const ProfileView = ({ onClose, onOpenSettings, userId }: ProfileViewProp
                 {displayName}
               </h3>
               {profile?.username && (
-                <p className="text-sm text-(--text-muted) mt-0.5">@{profile.username}</p>
+                <p className="text-sm text-(--text-muted) mt-0.5">
+                  @{profile.username}
+                </p>
               )}
-              <p className={`text-xs mt-1.5 font-medium ${online ? "text-green-500" : "text-(--text-muted)"}`}>
+              <p
+                className={`text-xs mt-1.5 font-medium ${
+                  online ? "text-green-500" : "text-(--text-muted)"
+                }`}
+              >
                 {online
                   ? "● в сети"
                   : lastSeenHidden
-                    ? "был(а) скрыто"
-                    : `был(а) ${formatLastSeen(profile?.last_seen_at)}`}
+                  ? "был(а) скрыто"
+                  : `был(а) ${formatLastSeen(profile?.last_seen_at)}`}
               </p>
             </div>
 
@@ -246,7 +289,13 @@ export const ProfileView = ({ onClose, onOpenSettings, userId }: ProfileViewProp
               <InfoRow
                 icon={<Clock size={14} />}
                 label="Последний визит"
-                value={lastSeenHidden ? <HiddenBadge /> : formatLastSeen(profile?.last_seen_at)}
+                value={
+                  lastSeenHidden ? (
+                    <HiddenBadge />
+                  ) : (
+                    formatLastSeen(profile?.last_seen_at)
+                  )
+                }
               />
               {profile?.created_at && (
                 <InfoRow
