@@ -115,28 +115,34 @@ export const MessageBubble = ({
 
           <div className="relative flex items-end" ref={bubbleRef}>
 
-            {/* Floating action toolbar */}
+            {/* Context menu (Telegram-style) */}
             {isMine && !isEditing && !msg._temp && (
               <div
-                role="toolbar"
+                role="menu"
                 aria-label="Действия с сообщением"
-                className={`absolute right-full flex gap-0.5 mb-1 transition-all duration-150 ${
-                  showActions ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1 pointer-events-none"
-                }`}
+                className={`absolute bottom-full right-0 mb-2 z-20 min-w-44 origin-bottom-right
+                  bg-(--surface) border border-(--border) rounded-2xl shadow-xl overflow-hidden
+                  transition-all duration-200 ease-out
+                  ${showActions ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-1 scale-95 pointer-events-none"}`}
               >
                 <button
+                  role="menuitem"
                   onClick={() => { onStartEdit(msg.id, msg.content); setShowActions(false); }}
                   aria-label="Редактировать сообщение"
-                  className="w-9 h-9 flex items-center justify-center rounded-lg text-(--text-muted) hover:text-accent hover:bg-accent/10 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-(--text-primary) hover:bg-(--hover) transition-colors"
                 >
-                  <Pencil size={14} aria-hidden="true" />
+                  <Pencil size={16} className="text-(--text-muted) shrink-0" aria-hidden="true" />
+                  Редактировать
                 </button>
+                <div className="h-px bg-(--border)" role="separator" />
                 <button
+                  role="menuitem"
                   onClick={() => { onDelete(msg.id); setShowActions(false); }}
                   aria-label="Удалить сообщение"
-                  className="w-9 h-9 flex items-center justify-center rounded-lg text-(--text-muted) hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-500/8 transition-colors"
                 >
-                  <Trash2 size={14} aria-hidden="true" />
+                  <Trash2 size={16} className="shrink-0" aria-hidden="true" />
+                  Удалить
                 </button>
               </div>
             )}
