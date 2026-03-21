@@ -10,6 +10,7 @@ import {
   RefreshCw,
   PenSquare,
   X,
+  Trash2,
 } from "lucide-react";
 import { useAuthStore } from "../../../entities/session/model/authStore";
 import { useDisplayName } from "../../../shared/hooks/useDisplayName";
@@ -23,6 +24,7 @@ interface SidebarProps {
   onOpenProfile: () => void;
   onSelectChat: (chat: Chat) => void;
   selectedChatId: number | null;
+  onChatDeleted?: (chatId: number) => void;
 }
 
 type SidebarTab = "chats" | "contacts" | "settings";
@@ -37,6 +39,7 @@ export const Sidebar = ({
   onOpenProfile,
   onSelectChat,
   selectedChatId,
+  onChatDeleted,
 }: SidebarProps) => {
   const navigate = useNavigate();
   const { profile, logout } = useAuthStore();
@@ -50,6 +53,7 @@ export const Sidebar = ({
   const [newChatName, setNewChatName] = useState("");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
+  const [deletingChatId, setDeletingChatId] = useState<number | null>(null);
 
   const loadChats = () => {
     setChatsLoading(true);
@@ -76,6 +80,19 @@ export const Sidebar = ({
       return;
     }
     setActiveTab(tab);
+  };
+
+  const handleDeleteChat = async (chatId: number) => {
+    setDeletingChatId(chatId);
+    try {
+      await chatsApi.deleteChat(chatId);
+      setChats((prev) => prev.filter((c) => c.id !== chatId));
+      onChatDeleted?.(chatId);
+    } catch {
+      // silent fail
+    } finally {
+      setDeletingChatId(null);
+    }
   };
 
   const handleCreateChat = async () => {
@@ -293,35 +310,45 @@ export const Sidebar = ({
             ) : (
               filtered.map((chat) => {
                 const isSelected = selectedChatId === chat.id;
+                const isDeleting = deletingChatId === chat.id;
                 return (
-                  <button
-                    key={chat.id}
-                    onClick={() => onSelectChat(chat)}
-                    aria-pressed={isSelected}
-                    aria-label={`Чат ${chat.name}`}
-                    className={`flex items-center gap-3 w-full px-3 py-2.5 transition-colors text-left relative ${
-                      isSelected ? "bg-(--accent)/8" : "hover:bg-(--hover)"
-                    }`}
-                  >
-                    {isSelected && (
-                      <span
-                        className="absolute left-0 top-2 bottom-2 w-0.75 rounded-r-full bg-(--accent)"
-                        aria-hidden="true"
-                      />
-                    )}
-                    <Avatar name={chat.name} size={46} />
-                    <div className="flex-1 min-w-0">
-                      <span
-                        className={`text-3.5 font-semibold truncate block leading-tight ${
-                          isSelected
-                            ? "text-(--accent)"
-                            : "text-(--text-primary)"
-                        }`}
-                      >
-                        {chat.name}
-                      </span>
-                    </div>
-                  </button>
+                  <div key={chat.id} className="relative group">
+                    <button
+                      onClick={() => onSelectChat(chat)}
+                      aria-pressed={isSelected}
+                      aria-label={`Чат ${chat.name}`}
+                      className={`flex items-center gap-3 w-full px-3 py-2.5 pr-10 transition-colors text-left relative ${
+                        isSelected ? "bg-(--accent)/8" : "hover:bg-(--hover)"
+                      }`}
+                    >
+                      {isSelected && (
+                        <span
+                          className="absolute left-0 top-2 bottom-2 w-0.75 rounded-r-full bg-(--accent)"
+                          aria-hidden="true"
+                        />
+                      )}
+                      <Avatar name={chat.name} size={46} />
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className={`text-3.5 font-semibold truncate block leading-tight ${
+                            isSelected
+                              ? "text-(--accent)"
+                              : "text-(--text-primary)"
+                          }`}
+                        >
+                          {chat.name}
+                        </span>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteChat(chat.id)}
+                      disabled={isDeleting}
+                      aria-label={`Удалить чат ${chat.name}`}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-(--text-muted) hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all disabled:opacity-40"
+                    >
+                      <Trash2 size={15} aria-hidden="true" />
+                    </button>
+                  </div>
                 );
               })
             )}

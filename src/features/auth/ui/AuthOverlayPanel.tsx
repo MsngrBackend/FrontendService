@@ -1,21 +1,7 @@
 type Mode = "login" | "register";
 
-const LogoMark = () => (
-  <svg width="28" height="28" viewBox="0 0 34 34" fill="none">
-    <rect x="7" y="8" width="4" height="19" rx="2" fill="white" />
-    <rect x="7" y="8" width="20" height="4" rx="2" fill="white" />
-    <rect
-      x="7"
-      y="15.5"
-      width="13"
-      height="4"
-      rx="2"
-      fill="white"
-      fillOpacity="0.85"
-    />
-    <circle cx="25" cy="17.5" r="2.5" fill="white" />
-    <rect x="7" y="23" width="20" height="4" rx="2" fill="white" />
-  </svg>
+const LogoWhite = () => (
+  <img src="/logo.svg" width="58" height="58" alt="Logo mark" />
 );
 
 interface AuthOverlayPanelProps {
@@ -76,16 +62,7 @@ export const AuthOverlayPanel = ({
       <div className="relative z-10 flex flex-col items-center px-10">
         {/* Brand block */}
         <div className="flex flex-col items-center mb-3">
-          <div
-            className="w-16 h-16 flex items-center justify-center"
-            style={{
-              background: "rgba(255,255,255,0.22)",
-              borderRadius: "20px",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-            }}
-          >
-            <LogoMark />
-          </div>
+          <LogoWhite />
         </div>
 
         {/* Dynamic text — switches halfway through slide */}

@@ -17,6 +17,10 @@ export const MainLayout = () => {
     setSelectedChat(null);
   };
 
+  const handleChatDeleted = (chatId: number) => {
+    if (selectedChat?.id === chatId) setSelectedChat(null);
+  };
+
   return (
     <div className="flex h-screen bg-(--base) overflow-hidden">
       <div
@@ -28,6 +32,7 @@ export const MainLayout = () => {
           onOpenProfile={() => setShowProfile(true)}
           onSelectChat={handleSelectChat}
           selectedChatId={selectedChat?.id ?? null}
+          onChatDeleted={handleChatDeleted}
         />
       </div>
 

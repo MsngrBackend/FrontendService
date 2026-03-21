@@ -73,4 +73,7 @@ export const chatsApi = {
 
   deleteMessage: (messageId: number) =>
     req<void>(`/messages/${messageId}/`, { method: 'DELETE' }),
+
+  deleteChat: (chatId: number) =>
+    req<void>(`/chats/${chatId}`, { method: 'DELETE' }),
 };

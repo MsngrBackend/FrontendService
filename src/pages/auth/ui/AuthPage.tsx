@@ -5,23 +5,7 @@ import { AuthOverlayPanel } from "../../../features/auth/ui/AuthOverlayPanel";
 
 type Mode = "login" | "register";
 
-const LogoMark = () => (
-  <svg width="28" height="28" viewBox="0 0 34 34" fill="none">
-    <rect x="7" y="8" width="4" height="19" rx="2" fill="white" />
-    <rect x="7" y="8" width="20" height="4" rx="2" fill="white" />
-    <rect
-      x="7"
-      y="15.5"
-      width="13"
-      height="4"
-      rx="2"
-      fill="white"
-      fillOpacity="0.85"
-    />
-    <circle cx="25" cy="17.5" r="2.5" fill="white" />
-    <rect x="7" y="23" width="20" height="4" rx="2" fill="white" />
-  </svg>
-);
+const LogoText = () => <img src="/logo-text.svg" width="100" alt="Logo text" />;
 
 export const AuthPage = () => {
   const [mode, setMode] = useState<Mode>("login");
@@ -44,22 +28,9 @@ export const AuthPage = () => {
         <div className="w-1/2 overflow-y-auto flex flex-col justify-center items-center">
           <div className="w-full max-w-sm">
             {/* Brand header */}
-            <div className="flex items-center gap-2.5 mb-8">
-              <div
-                className="w-9 h-9 flex items-center justify-center shrink-0"
-                style={{
-                  background: "var(--accent)",
-                  borderRadius: "10px",
-                  boxShadow: "0 4px 12px rgba(255,70,85,0.35)",
-                }}
-              >
-                <LogoMark />
-              </div>
+            <div className="flex items-center gap-2.5 mb-2">
               <div>
-                <p className="text-base font-bold text-(--text-primary) leading-none">
-                  Егор
-                </p>
-                <p className="text-xs text-(--text-muted) mt-0.5">Мессенджер</p>
+                <LogoText />
               </div>
             </div>
             <h2
@@ -79,22 +50,9 @@ export const AuthPage = () => {
         <div className="w-1/2 flex flex-col justify-center items-center">
           <div className="w-full max-w-sm">
             {/* Brand header */}
-            <div className="flex items-center gap-2.5 mb-8">
-              <div
-                className="w-9 h-9 flex items-center justify-center shrink-0"
-                style={{
-                  background: "var(--accent)",
-                  borderRadius: "10px",
-                  boxShadow: "0 4px 12px rgba(255,70,85,0.35)",
-                }}
-              >
-                <LogoMark />
-              </div>
+            <div className="flex items-center gap-2.5 mb-2">
               <div>
-                <p className="text-base font-bold text-(--text-primary) leading-none">
-                  Егор
-                </p>
-                <p className="text-xs text-(--text-muted) mt-0.5">Мессенджер</p>
+                <LogoText />
               </div>
             </div>
             <h2
@@ -121,22 +79,10 @@ export const AuthPage = () => {
       {/* ─── MOBILE: stacked tab layout ─── */}
       <div className="flex md:hidden flex-col w-full max-w-95 relative z-10">
         {/* Logo header */}
-        <div className="flex flex-col items-center mb-8 gap-3">
-          <div
-            className="w-16 h-16 flex items-center justify-center"
-            style={{
-              background: "var(--accent)",
-              borderRadius: "22px",
-              boxShadow: "0 8px 28px rgba(255,70,85,0.40)",
-            }}
-          >
-            <LogoMark />
-          </div>
+        <div className="flex flex-col items-center mb-4 gap-1">
+          <LogoText />
           <div className="text-center">
-            <h1 className="text-6 font-bold text-(--text-primary) tracking-tight leading-none">
-              Егор
-            </h1>
-            <p className="text-sm text-(--text-muted) mt-1.5">
+            <p className="text-sm text-(--text-muted)">
               {mode === "login" ? "Войдите в аккаунт" : "Создайте аккаунт"}
             </p>
           </div>
@@ -152,7 +98,7 @@ export const AuthPage = () => {
               <button
                 key={m}
                 onClick={() => setMode(m)}
-                className={`flex-1 py-1.5 text-3.25 font-semibold rounded-2.25 transition-all ${
+                className={`flex-1 py-1.5 text-3.25 font-semibold rounded-xl transition-all ${
                   mode === m
                     ? "bg-(--surface) text-(--text-primary) shadow-sm"
                     : "text-(--text-muted) hover:text-(--text-secondary)"
