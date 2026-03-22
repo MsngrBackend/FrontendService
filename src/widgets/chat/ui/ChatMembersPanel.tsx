@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { X, UserPlus, Trash2 } from 'lucide-react';
-import { profileApi } from '../../../shared/api/profile';
-import { Avatar } from '../../../shared/ui/Avatar';
-import { Spinner } from '../../../shared/ui/Spinner';
-import { useChatMembers } from '../lib/useChatMembers';
-import type { Profile } from '../../../shared/types/profile';
+import { useState } from "react";
+import { X, UserPlus, Trash2 } from "lucide-react";
+import { profileApi } from "../../../shared/api/profile";
+import { Avatar } from "../../../shared/ui/Avatar";
+import { Spinner } from "../../../shared/ui/Spinner";
+import { useChatMembers } from "../lib/useChatMembers";
+import type { Profile } from "../../../shared/types/profile";
 
 interface Props {
   chatId: number;
@@ -13,19 +13,22 @@ interface Props {
 }
 
 const getDisplayName = (profile: Profile | null, userId: string): string => {
-  if (!profile) return userId.slice(0, 8) + '…';
-  const name = [profile.first_name, profile.last_name].filter(Boolean).join(' ');
-  return name || profile.username || userId.slice(0, 8) + '…';
-}
+  if (!profile) return userId.slice(0, 8) + "…";
+  const name = [profile.first_name, profile.last_name]
+    .filter(Boolean)
+    .join(" ");
+  return name || profile.username || userId.slice(0, 8) + "…";
+};
 
 export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
-  const { members, profiles, loading, addMember, removeMember } = useChatMembers(chatId);
-  const [newUserId, setNewUserId] = useState('');
+  const { members, profiles, loading, addMember, removeMember } =
+    useChatMembers(chatId);
+  const [newUserId, setNewUserId] = useState("");
   const [adding, setAdding] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const resolveUserId = async (input: string): Promise<string> => {
-    if (input.startsWith('@')) {
+    if (input.startsWith("@")) {
       const profile = await profileApi.getProfileByUsername(input.slice(1));
       return profile.user_id;
     }
@@ -36,13 +39,13 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
     const raw = newUserId.trim();
     if (!raw) return;
     setAdding(true);
-    setError('');
+    setError("");
     try {
       const uid = await resolveUserId(raw);
       await addMember(uid);
-      setNewUserId('');
+      setNewUserId("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Ошибка');
+      setError(e instanceof Error ? e.message : "Ошибка");
     } finally {
       setAdding(false);
     }
@@ -76,7 +79,9 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
             <Spinner size={20} className="text-(--accent)" />
           </div>
         ) : members.length === 0 ? (
-          <p className="text-xs text-(--text-muted) text-center py-8">Нет участников</p>
+          <p className="text-xs text-(--text-muted) text-center py-8">
+            Нет участников
+          </p>
         ) : (
           members.map((m) => {
             const profile = profiles[m.user_id] ?? null;
@@ -92,7 +97,9 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
                   <p className="text-sm text-(--text-primary) truncate">
                     {name}
                     {isMe && (
-                      <span className="text-(--text-muted) text-xs ml-1">(вы)</span>
+                      <span className="text-(--text-muted) text-xs ml-1">
+                        (вы)
+                      </span>
                     )}
                   </p>
                   {profile?.username && (
@@ -104,7 +111,7 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
                 {!isMe && (
                   <button
                     onClick={() => handleRemove(m.user_id)}
-                    className="p-1 rounded-lg text-(--text-muted) hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
+                    className="p-1 rounded-lg text-(--text-muted) hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover:opacity-100 group-hover:opacity-100 transition-all"
                     title="Удалить из чата"
                   >
                     <Trash2 size={14} />
@@ -124,9 +131,9 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
             value={newUserId}
             onChange={(e) => {
               setNewUserId(e.target.value);
-              setError('');
+              setError("");
             }}
-            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             className="flex-1 bg-(--input-bg) rounded-xl px-3 py-1.5 text-xs outline-none text-(--text-primary) placeholder-(--text-muted) focus:ring-1 focus:ring-(--accent)/30"
           />
           <button
@@ -142,4 +149,4 @@ export const ChatMembersPanel = ({ chatId, myUserId, onClose }: Props) => {
       </div>
     </div>
   );
-}
+};
