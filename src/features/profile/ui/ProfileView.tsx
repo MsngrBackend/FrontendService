@@ -15,6 +15,7 @@ import { Avatar } from "../../../shared/ui/Avatar";
 import { Spinner } from "../../../shared/ui/Spinner";
 import { profileApi } from "../../../shared/api/profile";
 import type { Profile } from "../../../shared/types/profile";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileViewProps {
   onClose: () => void;
@@ -126,6 +127,7 @@ export const ProfileView = ({
 }: ProfileViewProps) => {
   const { profile: myProfile } = useAuthStore();
   const myDisplayName = useDisplayName();
+  const navigate = useNavigate();
 
   const [fetchResult, setFetchResult] = useState<{
     userId: string | null;
@@ -180,7 +182,7 @@ export const ProfileView = ({
       <button
         onClick={() => {
           onClose();
-          onOpenSettings();
+          navigate("/settings");
         }}
         className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors text-(--text-muted)"
         aria-label="Настройки профиля"

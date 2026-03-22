@@ -344,7 +344,7 @@ export const Sidebar = ({
                       onClick={() => handleDeleteChat(chat.id)}
                       disabled={isDeleting}
                       aria-label={`Удалить чат ${chat.name}`}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-(--text-muted) hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all disabled:opacity-40"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-(--text-muted) hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover:opacity-100 transition-all disabled:opacity-40"
                     >
                       <Trash2 size={15} aria-hidden="true" />
                     </button>

@@ -72,7 +72,9 @@ export const ChatHeader = ({
               </span>
             </span>
           ) : (
-            <span className="text-xs text-(--text-muted)">{pluralMembers(membersCount)}</span>
+            <span className="text-xs text-(--text-muted)">
+              {pluralMembers(membersCount)}
+            </span>
           )}
         </div>
       </div>

@@ -76,7 +76,10 @@ export const MessageBubble = ({
 
   const handleTouchStart = () => {
     if (!isMine || msg._temp) return;
-    longPressTimer.current = setTimeout(() => setShowActions((v) => !v), LONG_PRESS_MS);
+    longPressTimer.current = setTimeout(
+      () => setShowActions((v) => !v),
+      LONG_PRESS_MS
+    );
   };
 
   const handleTouchEnd = () => {
@@ -87,9 +90,16 @@ export const MessageBubble = ({
   };
 
   return (
-    <div className={`flex animate-msg-in px-1 ${isMine ? "justify-end" : "justify-start"}`}>
-      <div className={`flex gap-2 max-w-[72%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
-
+    <div
+      className={`flex animate-msg-in px-1 ${
+        isMine ? "justify-end" : "justify-start"
+      }`}
+    >
+      <div
+        className={`flex gap-2 max-w-[72%] ${
+          isMine ? "flex-row-reverse" : "flex-row"
+        }`}
+      >
         {/* Avatar */}
         {onAvatarClick ? (
           <button
@@ -114,7 +124,6 @@ export const MessageBubble = ({
           )}
 
           <div className="relative flex items-end" ref={bubbleRef}>
-
             {/* Context menu (Telegram-style) */}
             {isMine && !isEditing && !msg._temp && (
               <div
@@ -123,21 +132,35 @@ export const MessageBubble = ({
                 className={`absolute bottom-full right-0 mb-2 z-20 min-w-44 origin-bottom-right
                   bg-(--surface) border border-(--border) rounded-2xl shadow-xl overflow-hidden
                   transition-all duration-200 ease-out
-                  ${showActions ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-1 scale-95 pointer-events-none"}`}
+                  ${
+                    showActions
+                      ? "opacity-100 translate-y-0 scale-100"
+                      : "opacity-0 translate-y-1 scale-95 pointer-events-none"
+                  }`}
               >
                 <button
                   role="menuitem"
-                  onClick={() => { onStartEdit(msg.id, msg.content); setShowActions(false); }}
+                  onClick={() => {
+                    onStartEdit(msg.id, msg.content);
+                    setShowActions(false);
+                  }}
                   aria-label="Редактировать сообщение"
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-(--text-primary) hover:bg-(--hover) transition-colors"
                 >
-                  <Pencil size={16} className="text-(--text-muted) shrink-0" aria-hidden="true" />
+                  <Pencil
+                    size={16}
+                    className="text-(--text-muted) shrink-0"
+                    aria-hidden="true"
+                  />
                   Редактировать
                 </button>
                 <div className="h-px bg-(--border)" role="separator" />
                 <button
                   role="menuitem"
-                  onClick={() => { onDelete(msg.id); setShowActions(false); }}
+                  onClick={() => {
+                    onDelete(msg.id);
+                    setShowActions(false);
+                  }}
                   aria-label="Удалить сообщение"
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-500/8 transition-colors"
                 >
@@ -157,10 +180,14 @@ export const MessageBubble = ({
                 isMine
                   ? "bubble-mine text-(--msg-mine-text) rounded-2xl rounded-br-md"
                   : "bg-(--msg-other-bg) text-(--msg-other-text) rounded-2xl rounded-bl-md"
-              } ${msg._temp ? "opacity-60" : ""}`}
+              }`}
             >
               {isEditing ? (
-                <div className="flex flex-col gap-2 min-w-44" role="form" aria-label="Редактирование сообщения">
+                <div
+                  className="flex flex-col gap-2 min-w-44"
+                  role="form"
+                  aria-label="Редактирование сообщения"
+                >
                   <textarea
                     ref={editRef}
                     value={editText}
@@ -186,18 +213,26 @@ export const MessageBubble = ({
                       aria-busy={editSaving}
                       className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-(--msg-mine-text)/20 transition-colors text-(--msg-mine-text) disabled:opacity-40"
                     >
-                      {editSaving ? <Spinner size={12} /> : <Check size={13} aria-hidden="true" />}
+                      {editSaving ? (
+                        <Spinner size={12} />
+                      ) : (
+                        <Check size={13} aria-hidden="true" />
+                      )}
                     </button>
                   </div>
                 </div>
               ) : (
                 <>
-                  <p className="wrap-break-word whitespace-pre-wrap">{msg.content}</p>
+                  <p className="wrap-break-word whitespace-pre-wrap">
+                    {msg.content}
+                  </p>
                   <p
                     className={`text-2.5 mt-1 text-right select-none ${
                       isMine ? "text-white/55" : "text-(--text-muted)"
                     }`}
-                    aria-label={`Отправлено в ${formatTime(msg.created_at)}${msg.updated_at ? ", изменено" : ""}`}
+                    aria-label={`Отправлено в ${formatTime(msg.created_at)}${
+                      msg.updated_at ? ", изменено" : ""
+                    }`}
                   >
                     {formatTime(msg.created_at)}
                     {msg.updated_at && (

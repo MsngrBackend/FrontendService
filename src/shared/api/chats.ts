@@ -56,7 +56,7 @@ export const chatsApi = {
     }),
 
   removeMember: (chatId: number, userId: string) =>
-    req<void>(`/chats/${chatId}/members/${userId}`, { method: 'DELETE' }),
+    req<void>(`/chats/${chatId}/members/${userId}?deleted_user_id=${userId}`, { method: 'DELETE' }),
 
   getMessages: (chatId: number, limit = 50, offset = 0) =>
     req<Message[]>(`/messages/chats/${chatId}/messages/?limit=${limit}&offset=${offset}`),
