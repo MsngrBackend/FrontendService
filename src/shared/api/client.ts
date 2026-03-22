@@ -175,27 +175,41 @@ export async function uploadAvatar(file: File): Promise<{ avatar_url: string }> 
   const formData = new FormData();
   formData.append('avatar', file);
 
-  const headers: Record<string, string> = {};
-  const userId = getUserIdFromJwt();
-  if (userId) headers['X-User-ID'] = userId;
+  const doUpload = async (retry = false): Promise<{ avatar_url: string }> => {
+    const headers: Record<string, string> = {};
 
-  const response = await fetch(`${PROFILE_BASE_URL}/me/avatar`, {
-    method: 'POST',
-    headers,
-    body: formData,
-  });
+    const token = localStorage.getItem('access_token');
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  if (!response.ok) {
-    const contentType = response.headers.get('content-type') ?? '';
-    let message = 'Upload failed';
-    if (contentType.includes('application/json')) {
-      const body = await response.json().catch(() => ({ error: 'Upload failed' })) as Record<string, unknown>;
-      message = typeof body['error'] === 'string' ? body['error'] : 'Upload failed';
-    } else {
-      message = (await response.text().catch(() => 'Upload failed')).trim() || 'Upload failed';
+    const userId = getUserIdFromJwt();
+    if (userId) headers['X-User-ID'] = userId;
+
+    const response = await fetch(`${PROFILE_BASE_URL}/me/avatar`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    if (response.status === 401 && !retry) {
+      await refreshAccessToken();
+      return doUpload(true);
     }
-    throw { status: response.status, message } as ApiError;
-  }
 
-  return response.json() as Promise<{ avatar_url: string }>;
+    if (!response.ok) {
+      const contentType = response.headers.get('content-type') ?? '';
+      let message = 'Upload failed';
+      if (contentType.includes('application/json')) {
+        const body = await response.json().catch(() => ({ error: 'Upload failed' })) as Record<string, unknown>;
+        message = typeof body['error'] === 'string' ? body['error'] : 'Upload failed';
+      } else {
+        message = (await response.text().catch(() => 'Upload failed')).trim() || 'Upload failed';
+      }
+      throw { status: response.status, message } as ApiError;
+    }
+
+    return response.json() as Promise<{ avatar_url: string }>;
+  };
+
+  return doUpload();
 }
+
