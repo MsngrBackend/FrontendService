@@ -89,7 +89,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
         />
 
         <div
-          className={`flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2 ${chatBg}`}
+          className={`flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 flex flex-col gap-2 ${chatBg}`}
           role="log"
           aria-label="Сообщения"
           aria-live="polite"

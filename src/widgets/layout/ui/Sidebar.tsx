@@ -119,7 +119,7 @@ export const Sidebar = ({
 
   return (
     <aside
-      className="flex flex-col w-full md:w-80 bg-(--sidebar) border-r border-(--border) h-full shrink-0"
+      className="flex flex-col w-full md:w-80 bg-(--sidebar) border-r border-(--border) h-full shrink-0 safe-top"
       aria-label="Панель навигации"
     >
       {/* ── Header ── */}
@@ -387,7 +387,7 @@ export const Sidebar = ({
 
       {/* ── Tab bar ── */}
       <nav aria-label="Основная навигация">
-        <div className="flex border-t border-(--border) bg-(--sidebar)">
+        <div className="flex border-t border-(--border) bg-(--sidebar) safe-bottom">
           {TABS.map(({ key, Icon, label }) => {
             const isActive = activeTab === key;
             return (

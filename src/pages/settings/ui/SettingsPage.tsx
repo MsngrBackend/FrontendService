@@ -151,15 +151,15 @@ export const SettingsPage = () => {
   const currentNavItem = navItems.find((n) => n.key === tab);
 
   return (
-    <div className="flex h-screen bg-(--base) overflow-hidden">
+    <div className="flex h-dvh bg-(--base) overflow-hidden">
       {/* ── Left sidebar ── */}
       <aside
         className={`${
           mobileShowContent ? "hidden md:flex" : "flex"
-        } flex-col w-full md:w-72 lg:w-80 bg-sidebar border-r border-border shrink-0`}
+        } flex-col w-full md:w-72 lg:w-80 bg-sidebar border-r border-border shrink-0 safe-top`}
       >
         {/* Top bar */}
-        <div className="flex items-center gap-2 px-4 h-14 border-b border-border shrink-0">
+        <div className="flex items-center gap-2 px-4 min-h-14 border-b border-border shrink-0">
           <button
             onClick={() => navigate(-1)}
             className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors text-(--text-muted) hover:text-(--text-primary)"
@@ -238,7 +238,7 @@ export const SettingsPage = () => {
       <main
         className={`${
           mobileShowContent ? "flex" : "hidden md:flex"
-        } flex-1 flex-col overflow-hidden`}
+        } flex-1 flex-col overflow-hidden safe-top`}
       >
         {/* Content header */}
         <div className="flex items-center gap-3 px-6 md:px-10 h-14 border-b border-border shrink-0">

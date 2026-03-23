@@ -31,7 +31,7 @@ export const ChatHeader = ({
   onBack,
 }: ChatHeaderProps) => {
   return (
-    <header className="flex items-center gap-2.5 px-4 py-3 border-b border-(--border) bg-(--surface) shrink-0">
+    <header className="flex items-center gap-2.5 px-4 pb-3 border-b border-(--border) bg-(--surface) shrink-0 safe-top">
       {onBack && (
         <button
           onClick={onBack}

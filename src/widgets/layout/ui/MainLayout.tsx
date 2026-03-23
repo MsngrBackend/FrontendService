@@ -22,7 +22,7 @@ export const MainLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-(--base) overflow-hidden">
+    <div className="flex h-dvh bg-(--base) overflow-hidden">
       <div
         className={`${
           selectedChat ? "hidden md:flex" : "flex"

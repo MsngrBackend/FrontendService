@@ -21,7 +21,7 @@ export const MessageInput = ({
   const canSend = value.trim().length > 0;
 
   return (
-    <div className="px-4 py-3 border-t border-(--border) bg-(--surface) shrink-0">
+    <div className="px-4 pt-3 border-t border-(--border) bg-(--surface) shrink-0 safe-bottom">
       <div className="flex gap-2.5 items-end">
         <Avatar src={profileAvatarUrl} name={displayName || "?"} size={32} className="mb-1.5 shrink-0" />
         <div className="flex-1 flex gap-2 bg-(--input-bg) rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-(--accent)/20 transition-all items-center">
