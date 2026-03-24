@@ -15,6 +15,7 @@ interface MessageBubbleProps {
   msg: Message;
   isMine: boolean;
   senderName: string;
+  senderAvatarUrl?: string;
   isEditing: boolean;
   editText: string;
   editSaving: boolean;
@@ -33,6 +34,7 @@ export const MessageBubble = ({
   msg,
   isMine,
   senderName,
+  senderAvatarUrl,
   isEditing,
   editText,
   editSaving,
@@ -108,11 +110,11 @@ export const MessageBubble = ({
             aria-label={`Профиль ${senderName}`}
             className="shrink-0 self-end mb-1 rounded-full hover:opacity-80 transition-opacity p-2 -m-2"
           >
-            <Avatar name={senderName} size={28} />
+            <Avatar src={senderAvatarUrl} name={senderName} size={28} />
           </button>
         ) : (
           <div className="shrink-0 self-end mb-1" aria-hidden="true">
-            <Avatar name={senderName} size={28} />
+            <Avatar src={senderAvatarUrl} name={senderName} size={28} />
           </div>
         )}
 

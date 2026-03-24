@@ -56,7 +56,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const { members } = useChatMembers(chat.id);
-  const senderNames = useSenderNames(chat.id);
+  const senderInfo = useSenderNames(chat.id);
   const { input, handleSend, handleKeyDown, handleInputChange } = useChatInput({
     sendMessage,
     sendTyping,
@@ -89,7 +89,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
           onBack={onBack}
           userName={
             typingUserId
-              ? (senderNames[typingUserId] ?? typingUserId.slice(0, 8))
+              ? (senderInfo[typingUserId]?.name ?? typingUserId.slice(0, 8))
               : ""
           }
         />
@@ -119,7 +119,8 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
                 key={msg.id}
                 msg={msg}
                 isMine={msg.sender_id === myUserId}
-                senderName={senderNames[msg.sender_id] ?? msg.sender_id.slice(0, 8)}
+                senderName={senderInfo[msg.sender_id]?.name ?? msg.sender_id.slice(0, 8)}
+                senderAvatarUrl={senderInfo[msg.sender_id]?.avatarUrl}
                 isEditing={editingId === msg.id}
                 editText={editText}
                 editSaving={editSaving}
