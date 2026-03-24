@@ -3,6 +3,7 @@ import { Pencil, Trash2, Check, X } from "lucide-react";
 import { Avatar } from "../../../shared/ui/Avatar";
 import { Spinner } from "../../../shared/ui/Spinner";
 import type { Message } from "../../../shared/types/chat";
+import { MarkdownMessage } from "./MarkdownMessage";
 
 const formatTime = (iso: string) =>
   new Date(iso).toLocaleTimeString("ru-RU", {
@@ -116,7 +117,7 @@ export const MessageBubble = ({
         )}
 
         {/* Bubble + actions */}
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0">
           {!isMine && (
             <span className="text-2.75 font-medium text-(--text-muted) mb-1 ml-1">
               {senderName}
@@ -176,7 +177,7 @@ export const MessageBubble = ({
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
               onTouchMove={handleTouchEnd}
-              className={`px-3.5 py-2.5 text-sm leading-relaxed select-none ${
+              className={`px-3.5 py-2.5 text-sm leading-relaxed wrap-break-word min-w-0 overflow-hidden ${
                 isMine
                   ? "bubble-mine text-(--msg-mine-text) rounded-2xl rounded-br-md"
                   : "bg-(--msg-other-bg) text-(--msg-other-text) rounded-2xl rounded-bl-md"
@@ -223,9 +224,7 @@ export const MessageBubble = ({
                 </div>
               ) : (
                 <>
-                  <p className="wrap-break-word whitespace-pre-wrap">
-                    {msg.content}
-                  </p>
+                  <MarkdownMessage content={msg.content} isMine={isMine} />
                   <p
                     className={`text-2.5 mt-1 text-right select-none ${
                       isMine ? "text-white/55" : "text-(--text-muted)"

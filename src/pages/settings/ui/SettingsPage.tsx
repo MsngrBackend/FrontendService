@@ -24,7 +24,10 @@ import { useDisplayName } from "../../../shared/hooks/useDisplayName";
 import { useProfileForm } from "../../../features/profile/lib/useProfileForm";
 import { useAvatarUpload } from "../../../features/profile/lib/useAvatarUpload";
 import { usePrivacySettings } from "../../../features/profile/lib/usePrivacySettings";
-import { useSessions, parseUserAgent } from "../../../features/profile/lib/useSessions";
+import {
+  useSessions,
+  parseUserAgent,
+} from "../../../features/profile/lib/useSessions";
 import { Avatar } from "../../../shared/ui/Avatar";
 import { Input } from "../../../shared/ui/Input";
 import { Textarea } from "../../../shared/ui/Textarea";
@@ -161,7 +164,7 @@ export const SettingsPage = () => {
         {/* Top bar */}
         <div className="flex items-center gap-2 px-4 min-h-14 border-b border-border shrink-0">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             className="p-1.5 rounded-lg hover:bg-(--hover) transition-colors text-(--text-muted) hover:text-(--text-primary)"
           >
             <ArrowLeft size={18} />
@@ -206,7 +209,9 @@ export const SettingsPage = () => {
               >
                 <div
                   className={`w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 ${iconBg} ${
-                    isActive ? "opacity-100" : "opacity-75 group-hover:opacity-100"
+                    isActive
+                      ? "opacity-100"
+                      : "opacity-75 group-hover:opacity-100"
                   }`}
                 >
                   {icon}
@@ -433,9 +438,7 @@ export const SettingsPage = () => {
                               <button
                                 key={opt.value}
                                 type="button"
-                                onClick={() =>
-                                  privacy.change(field, opt.value)
-                                }
+                                onClick={() => privacy.change(field, opt.value)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                                   isSelected
                                     ? "bg-(--surface) shadow-sm text-accent"
@@ -485,56 +488,61 @@ export const SettingsPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {THEME_OPTIONS.map(({ key, label, description, bg, accent, Icon }) => {
-                  const isActive = theme === key;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => setTheme(key)}
-                      className={`relative flex flex-col gap-4 p-5 rounded-2xl transition-all text-left ${
-                        isActive
-                          ? "bg-(--surface) ring-2 ring-accent"
-                          : "bg-(--surface) hover:bg-(--hover) ring-1 ring-border hover:ring-accent/30"
-                      }`}
-                    >
-                      {/* Theme preview */}
-                      <div
-                        className="w-full h-20 rounded-xl flex items-end p-3 overflow-hidden"
-                        style={{ background: bg }}
+                {THEME_OPTIONS.map(
+                  ({ key, label, description, bg, accent, Icon }) => {
+                    const isActive = theme === key;
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setTheme(key)}
+                        className={`relative flex flex-col gap-4 p-5 rounded-2xl transition-all text-left ${
+                          isActive
+                            ? "bg-(--surface) ring-2 ring-accent"
+                            : "bg-(--surface) hover:bg-(--hover) ring-1 ring-border hover:ring-accent/30"
+                        }`}
                       >
-                        {/* Mini UI mockup */}
-                        <div className="flex items-center gap-2 w-full">
-                          <div
-                            className="w-5 h-5 rounded-full shrink-0"
-                            style={{ background: accent }}
-                          />
-                          <div className="flex-1 flex flex-col gap-1">
+                        {/* Theme preview */}
+                        <div
+                          className="w-full h-20 rounded-xl flex items-end p-3 overflow-hidden"
+                          style={{ background: bg }}
+                        >
+                          {/* Mini UI mockup */}
+                          <div className="flex items-center gap-2 w-full">
                             <div
-                              className="h-1.5 rounded-full w-3/4 opacity-60"
+                              className="w-5 h-5 rounded-full shrink-0"
                               style={{ background: accent }}
                             />
-                            <div className="h-1.5 rounded-full w-1/2 bg-white/20" />
+                            <div className="flex-1 flex flex-col gap-1">
+                              <div
+                                className="h-1.5 rounded-full w-3/4 opacity-60"
+                                style={{ background: accent }}
+                              />
+                              <div className="h-1.5 rounded-full w-1/2 bg-white/20" />
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-semibold text-(--text-primary) flex items-center gap-2">
-                            <Icon size={14} className="text-(--text-muted)" />
-                            {label}
-                          </p>
-                          <p className="text-xs text-(--text-muted) mt-0.5">
-                            {description}
-                          </p>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-semibold text-(--text-primary) flex items-center gap-2">
+                              <Icon size={14} className="text-(--text-muted)" />
+                              {label}
+                            </p>
+                            <p className="text-xs text-(--text-muted) mt-0.5">
+                              {description}
+                            </p>
+                          </div>
+                          {isActive && (
+                            <CheckCircle2
+                              size={18}
+                              className="text-accent shrink-0"
+                            />
+                          )}
                         </div>
-                        {isActive && (
-                          <CheckCircle2 size={18} className="text-accent shrink-0" />
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  }
+                )}
               </div>
             </div>
           )}
@@ -569,11 +577,11 @@ export const SettingsPage = () => {
               ) : (
                 <div className="flex flex-col divide-y divide-border">
                   {sessions.sessions.map((session) => {
-                    const isCurrent =
-                      sessions.currentSessionId === session.id;
+                    const isCurrent = sessions.currentSessionId === session.id;
                     const label = parseUserAgent(session.user_agent);
-                    const isMobile =
-                      /mobile|android|iphone|ipad/i.test(session.user_agent);
+                    const isMobile = /mobile|android|iphone|ipad/i.test(
+                      session.user_agent
+                    );
                     return (
                       <div
                         key={session.id}

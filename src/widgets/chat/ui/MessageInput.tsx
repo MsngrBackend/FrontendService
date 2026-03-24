@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { Avatar } from "../../../shared/ui/Avatar";
 
@@ -10,6 +11,13 @@ interface MessageInputProps {
   onSend: () => void;
 }
 
+const LINE_HEIGHT = 1.5; // em, matches style below
+const FONT_SIZE_PX = 14; // text-sm = 14px
+const ONE_LINE_PX = Math.round(LINE_HEIGHT * FONT_SIZE_PX); // ~21px
+const VERTICAL_PADDING_PX = 12; // py-1.5 * 2 = 6+6
+const MIN_HEIGHT_PX = ONE_LINE_PX + VERTICAL_PADDING_PX; // ~33px
+const MAX_HEIGHT_PX = ONE_LINE_PX * 5 + VERTICAL_PADDING_PX; // 5 lines ~117px
+
 export const MessageInput = ({
   profileAvatarUrl,
   displayName,
@@ -19,13 +27,22 @@ export const MessageInput = ({
   onSend,
 }: MessageInputProps) => {
   const canSend = value.trim().length > 0;
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, MAX_HEIGHT_PX)}px`;
+  }, [value]);
 
   return (
     <div className="px-4 pt-3 border-t border-(--border) bg-(--surface) shrink-0 safe-bottom">
       <div className="flex gap-2.5 items-end">
         <Avatar src={profileAvatarUrl} name={displayName || "?"} size={32} className="mb-1.5 shrink-0" />
-        <div className="flex-1 flex gap-2 bg-(--input-bg) rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-(--accent)/20 transition-all items-center">
+        <div className="flex-1 flex gap-2 bg-(--input-bg) rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-(--accent)/20 transition-all items-end">
           <textarea
+            ref={textareaRef}
             value={value}
             onChange={onChange}
             onKeyDown={onKeyDown}
@@ -33,8 +50,12 @@ export const MessageInput = ({
             rows={1}
             aria-label="Введите сообщение"
             aria-multiline="true"
-            className="flex-1 resize-none bg-transparent py-1.5 text-sm text-(--text-primary) placeholder-(--text-muted) outline-none max-h-32 overflow-y-auto"
-            style={{ lineHeight: "1.5" }}
+            className="flex-1 resize-none bg-transparent py-1.5 text-sm text-(--text-primary) placeholder-(--text-muted) outline-none overflow-y-auto"
+            style={{
+              lineHeight: LINE_HEIGHT,
+              minHeight: `${MIN_HEIGHT_PX}px`,
+              maxHeight: `${MAX_HEIGHT_PX}px`,
+            }}
           />
           <button
             onClick={onSend}

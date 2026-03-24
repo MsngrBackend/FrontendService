@@ -46,6 +46,12 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
 
   const [showMembers, setShowMembers] = useState(false);
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
+  const [viewingOwnProfile, setViewingOwnProfile] = useState(false);
+
+  const handleAvatarClick = (userId: string) => {
+    if (userId === myUserId) setViewingOwnProfile(true);
+    else setViewingUserId(userId);
+  };
   const chatBg = VALORANT_BACKGROUNDS[Math.abs(Number(chat.id) || 0) % VALORANT_BACKGROUNDS.length] ?? VALORANT_BACKGROUNDS[0]!;
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -83,7 +89,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
           onBack={onBack}
           userName={
             typingUserId
-              ? senderNames[typingUserId] ?? typingUserId.slice(0, 8)
+              ? (senderNames[typingUserId] ?? typingUserId.slice(0, 8))
               : ""
           }
         />
@@ -113,9 +119,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
                 key={msg.id}
                 msg={msg}
                 isMine={msg.sender_id === myUserId}
-                senderName={
-                  senderNames[msg.sender_id] ?? msg.sender_id.slice(0, 8)
-                }
+                senderName={senderNames[msg.sender_id] ?? msg.sender_id.slice(0, 8)}
                 isEditing={editingId === msg.id}
                 editText={editText}
                 editSaving={editSaving}
@@ -125,7 +129,7 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
                 onEditSave={saveEdit}
                 onEditCancel={cancelEdit}
                 onEditKeyDown={handleEditKeyDown}
-                onAvatarClick={setViewingUserId}
+                onAvatarClick={handleAvatarClick}
               />
             ))
           )}
@@ -155,6 +159,10 @@ export const ChatView = ({ chat, onBack }: ChatViewProps) => {
           userId={viewingUserId}
           onClose={() => setViewingUserId(null)}
         />
+      )}
+
+      {viewingOwnProfile && (
+        <ProfileView onClose={() => setViewingOwnProfile(false)} />
       )}
     </div>
   );

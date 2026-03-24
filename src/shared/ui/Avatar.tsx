@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 interface AvatarProps {
   src?: string | null;
   name?: string | null;
@@ -12,7 +14,7 @@ const getInitials = (name: string): string => {
     .slice(0, 2)
     .join("")
     .toUpperCase();
-}
+};
 
 const COLORS = [
   "bg-[#FF4655]",
@@ -29,23 +31,30 @@ const colorForName = (name: string): string => {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash += name.charCodeAt(i);
   return COLORS[hash % COLORS.length] ?? COLORS[0]!;
-}
+};
 
 export const Avatar = ({ src, name, size = 40, className = "" }: AvatarProps) => {
-  const style = { width: size, height: size, fontSize: size * 0.38 };
+  const [imgError, setImgError] = useState(false);
 
-  if (src) {
+  useEffect(() => {
+    setImgError(false);
+  }, [src]);
+
+  const style = { width: size, height: size, fontSize: size * 0.38 };
+  const displayName = name ?? "?";
+
+  if (src && !imgError) {
     return (
       <img
         src={src}
-        alt={name ?? "avatar"}
+        alt={displayName}
         style={style}
+        onError={() => setImgError(true)}
         className={`rounded-full object-cover shrink-0 ${className}`}
       />
     );
   }
 
-  const displayName = name ?? "?";
   const initials = getInitials(displayName);
   const color = colorForName(displayName);
 
@@ -57,4 +66,4 @@ export const Avatar = ({ src, name, size = 40, className = "" }: AvatarProps) =>
       {initials}
     </div>
   );
-}
+};
