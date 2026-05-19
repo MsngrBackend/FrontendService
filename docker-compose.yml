@@ -2,11 +2,14 @@ name: frontend-service
 
 services:
   app:
+    container_name: frontend-service-app-1
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8085:80"
+      - "80:80"
+    env_file:
+      - .env
     restart: unless-stopped
     networks:
       - msngr-network
